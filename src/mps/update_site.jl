@@ -43,7 +43,7 @@ function _update_two_site!(sysenv::StateEnvs, solver, pos::Int, ortho::String,
     set_nsite!(sysenv, nsite)
     phi = sysenv.psi[pos] * sysenv.psi[pos+1]
     position!(sysenv, pos)        
-    energy, phi = solver(getenv(sysenv), phi, time_step; kwargs...)
+    energy, phi = solver(sysenv.PH), phi, time_step; kwargs...)
     normalize && normalize!(phi)
     isnan(energy) && (energy = real(scalar(dag(phi) * sysenv.PH(phi))))
 
@@ -71,7 +71,7 @@ function _update_two_site!(sysenv::StateEnvs, solver, pos::Int, ortho::String,
         phi0 = sysenv.psi[pos1]       
         set_nsite!(sysenv, nsite - 1)
         position!(sysenv, pos1)
-        energy, phi0 = solver(getenv(sysenv), phi0, -time_step; kwargs...)
+        energy, phi0 = solver(sysenv.PH), phi0, -time_step; kwargs...)
         normalize && normalize!(phi0)
         isnan(energy) && (energy = real(scalar(dag(phi0) * sysenv.PH(phi0))))
         sysenv.psi[pos1] = phi0
@@ -101,7 +101,7 @@ function _update_one_site!(sysenv::StateEnvs, solver, pos::Int, ortho::String,
     set_nsite!(sysenv, nsite)
     phi = sysenv.psi[pos]
     position!(sysenv, pos)        
-    energy, phi = solver(getenv(sysenv), phi, time_step; kwargs...)
+    energy, phi = solver(sysenv.PH), phi, time_step; kwargs...)
     normalize && normalize!(phi)
     isnan(energy) && (energy = real(scalar(dag(phi) * sysenv.PH(phi))))
 
@@ -161,7 +161,7 @@ function _update_one_site!(sysenv::StateEnvs, solver, pos::Int, ortho::String,
                 pos1 = ortho == "left" ? pos + 1 : pos
                 set_nsite!(sysenv, nsite - 1)
                 position!(sysenv, pos1)
-                energy, phi0 = solver(getenv(sysenv), phi0, -time_step; kwargs...)
+                energy, phi0 = solver(sysenv.PH), phi0, -time_step; kwargs...)
                 normalize && normalize!(phi0)
                 isnan(energy) && (energy = real(scalar(dag(phi0) * sysenv.PH(phi0))))
             end
@@ -371,7 +371,7 @@ function _updateOneSite456!(sysenv::StateEnvs, solver, pos::Int, ortho::String,
     phi = sysenv.psi[pos]
     position!(sysenv, pos)        
     ts = @elapsed begin
-        energy, phi = solver(getenv(sysenv), phi, time_step; kwargs...)
+        energy, phi = solver(sysenv.PH), phi, time_step; kwargs...)
     end
     global Tsol += ts
     normalize && normalize!(phi)
@@ -420,7 +420,7 @@ function _updateOneSite456!(sysenv::StateEnvs, solver, pos::Int, ortho::String,
             pos1 = ortho == "left" ? pos + 1 : pos
             set_nsite!(sysenv, nsite - 1)
             position!(sysenv, pos1)
-            energy, phi0 = solver(getenv(sysenv), phi0, -time_step; kwargs...)
+            energy, phi0 = solver(sysenv.PH), phi0, -time_step; kwargs...)
             normalize && normalize!(phi0)
             isnan(energy) && (energy = real(scalar(dag(phi0) * sysenv.PH(phi0))))
         end

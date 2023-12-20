@@ -27,25 +27,7 @@ end
 #################################################################################
 
 """
-    Base.copy(sysenv::StateEnvs)
-
-Shallow copy of `StateEnvs`.
-"""
-Base.copy(sysenv::StateEnvs) = StateEnvs(Base.copy(sysenv.psi), Base.copy(sysenv.PH))
-
-#################################################################################
-
-"""
-    Base.length(sysenv::StateEnvs)
-
-Returns the length of the underlying MPS/Environment.
-"""
-Base.length(sysenv::StateEnvs) = Base.length(sysenv.psi)
-
-#################################################################################
-
-"""
-    getpsi(sysenv::StateEnvs)
+    function getpsi(sysenv::StateEnvs)
 
 Returns (shallow copy of) the state `psi`.
 """
@@ -54,51 +36,18 @@ getpsi(sysenv::StateEnvs) = Base.copy(sysenv.psi)
 #################################################################################
 
 """
-    getenv(sysenv::StateEnvs) = sysenv.PH
+    function getenv(sysenv::StateEnvs)
 
-Returns the environment `PH`.
+Returns (shallow copy of) the environment `PH`.
 """
-getenv(sysenv::StateEnvs) = sysenv.PH
+getenv(sysenv::StateEnvs) = base.copy(sysenv.PH)
 
 #################################################################################
 
 """
-    nsite(sysenv::StateEnvs)
+    function StateEnvs(psi::MPS, H::MPO)
 
-Returns the `nsite` of the environment.
-"""
-nsite(sysenv::StateEnvs) = nsite(sysenv.PH)
-
-#################################################################################
-
-"""
-    set_nsite!(sysenv::StateEnvs, nsite::Int)
-
-Set `nsite` of the environment.
-""" 
-function set_nsite!(sysenv::StateEnvs, nsite::Int)
-    set_nsite!(sysenv.PH, nsite)
-    return sysenv
-end
-
-#################################################################################
-
-"""
-    position!(sysenv::StateEnvs, pos::Int)
-
-Compute left and right environments at position `pos`.
-"""
-function position!(sysenv::StateEnvs, pos::Int)
-    position!(sysenv.PH, sysenv.psi, pos)
-    return sysenv
-end
-
-#################################################################################
-
-"""
-    StateEnvs(psi::MPS, H::MPO)
-
-Constructor of the  `StateEnvs`.
+Constructor of the `StateEnvs` from a single `MPO`.
 """
 function StateEnvs(psi::MPS, H::MPO)
     ITensors.check_hascommoninds(siteinds, H, psi)
@@ -111,9 +60,10 @@ end
 #################################################################################
 
 """
-    StateEnvs(psi::MPS, Hs::Vector{MPO})
+    function StateEnvs(psi::MPS, Hs::Vector{MPO})
 
-Constructor of the  `StateEnvs`.
+Constructor of the  `StateEnvs` from a vector of `MPO`.
+Environments are contracted in parallel.
 """
 function StateEnvs(psi::MPS, Hs::Vector{MPO})
     for H in Hs
@@ -128,9 +78,10 @@ end
 #################################################################################
 
 """
-    StateEnvs(psi::MPS, H::MPO, Ms::Vector{MPS}; weight::Float64)
+    function StateEnvs(psi::MPS, H::MPO, Ms::Vector{MPS}; weight::Float64)
 
-Constructor of the  `StateEnvs`.
+Constructor of the `StateEnvs` from a single `MPO` and a vector of `MPS` used
+for excited state DMRG.
 """
 function StateEnvs(psi::MPS, H::MPO, Ms::Vector{MPS}; weight::Float64)
     
@@ -153,9 +104,10 @@ end
 #################################################################################
 
 """
-    StateEnvs(psi::MPS, Hs::Vector{MPO}, Ms::Vector{MPS}; weight::Float64)
+    function StateEnvs(psi::MPS, Hs::Vector{MPO}, Ms::Vector{MPS}; weight::Float64)
 
-Constructor of the  `StateEnvs`.
+Constructor of the `StateEnvs` from a vector of `MPO` and a vector of `MPS` used
+for excited state DMRG. Environments for `MPO`s are contracted in parallel.
 """
 function StateEnvs(psi::MPS, Hs::Vector{MPO}, Ms::Vector{MPS}; weight::Float64)
 
@@ -182,9 +134,10 @@ end
 #################################################################################
 
 """
-    StateEnvs(psi::MPS, H::CouplingModel)
+    function StateEnvs(psi::MPS, H::CouplingModel)
 
-Constructor of the  `StateEnvs`.
+Constructor of the `StateEnvs` from a `CouplingModel`. Each terms in the `CouplingModel`
+are contracted in parallel.
 """
 function StateEnvs(psi::MPS, H::CouplingModel)
 
@@ -196,7 +149,29 @@ end
 #################################################################################
 
 """
-    updateH!(sysenv::StateEnvs{ProjMPO}, H::MPO; recalcEnv::Bool = true)
+    function StateEnvs(psi::MPS, H::CouplingModel, Ms::Vector{MPS}; weight::Float64)
+
+Constructor of StateEnvs from a `CouplingModel` and and a vector of `MPS` used
+for excited state DMRG. Each terms in the `CouplingModel` are contracted in parallel.
+"""
+function StateEnvs(psi::MPS, H::CouplingModel, Ms::Vector{MPS}; weight::Float64)
+    
+    @assert siteinds(psi) == siteinds(H)
+
+    Ms .= permute.(Ms, Ref((linkind, siteinds, linkind)))
+    if weight <= 0.0
+        error(string("`weight` parameter should be > 0.0",
+                     " (value passed was `weight=$weight`)")
+              )
+    end
+    PMM = ProjCouplingModel_MPS(H, Ms; weight=weight)
+    return StateEnvs(copy(psi), PMM)
+end
+
+#################################################################################
+
+"""
+    function updateH!(sysenv::StateEnvs{ProjMPO}, H::MPO; recalcEnv::Bool = true)
 
 Update Hamiltonian `H` in `sysenv::StateEnvs`. If `recalcEnv = false`,
 it reuses previous environments.
@@ -233,28 +208,7 @@ end
 #################################################################################
 
 """
-    StateEnvs(psi::MPS, H::CouplingModel, Ms::Vector{MPS}; weight::Float64)
-
-Constructor of StateEnvs.
-"""
-function StateEnvs(psi::MPS, H::CouplingModel, Ms::Vector{MPS}; weight::Float64)
-    
-    @assert siteinds(psi) == siteinds(H)
-
-    Ms .= permute.(Ms, Ref((linkind, siteinds, linkind)))
-    if weight <= 0.0
-        error(string("`weight` parameter should be > 0.0",
-                     " (value passed was `weight=$weight`)")
-              )
-    end
-    PMM = ProjCouplingModel_MPS(H, Ms; weight=weight)
-    return StateEnvs(copy(psi), PMM)
-end
-
-#################################################################################
-
-"""
-    updateH!(sysenv::StateEnvs{ProjMPOSum2}, Hs::Vector{MPO}; recalcEnv::Bool = true)
+    function updateH!(sysenv::StateEnvs{ProjMPOSum2}, Hs::Vector{MPO}; recalcEnv::Bool = true)
 
 Update Hamiltonian `H` in `sysenv::StateEnvs`. `recalcEnv = false` is not supported.
 """
@@ -276,8 +230,8 @@ end
 #################################################################################
 
 """
-    updateH!(sysenv::StateEnvs{ProjMPO_MPS2}, H::MPO, Ms::Vector{MPS};
-             weight::Float64, recalcEnv::Bool = true)
+    function updateH!(sysenv::StateEnvs{ProjMPO_MPS2}, H::MPO, Ms::Vector{MPS};
+                      weight::Float64, recalcEnv::Bool = true)
 
 Update Hamiltonian `H` in `sysenv::StateEnvs`. `recalcEnv = false` is not supported.
  - `weight::Union{Nothing, Float64} = nothing`.
@@ -309,8 +263,8 @@ end
 #################################################################################
 
 """
-    updateH!(sysenv::StateEnvs{ProjMPOSum_MPS}, Hs::Vector{MPO}, Ms::Vector{MPS};
-             weight::Float64, recalcEnv::Bool = true)
+    function updateH!(sysenv::StateEnvs{ProjMPOSum_MPS}, Hs::Vector{MPO}, Ms::Vector{MPS};
+                      weight::Float64, recalcEnv::Bool = true)
 
 Update Hamiltonian `H` in `sysenv::StateEnvs`. `recalcEnv = false` is not supported.
  - `weight::Union{Nothing, Float64} = nothing`.
@@ -347,8 +301,8 @@ end
 #################################################################################
 
 """
-    updateH!(sysenv::StateEnvs{ProjCouplingModel_MPS}, H::CouplingModel, Ms::Vector{MPS};
-             weight::Float64, recalcEnv::Bool = true)
+    function updateH!(sysenv::StateEnvs{ProjCouplingModel_MPS}, H::CouplingModel, Ms::Vector{MPS};
+                      weight::Float64, recalcEnv::Bool = true)
 
 Update Hamiltonian `H` in `sysenv::StateEnvs`. `recalcEnv = false` is not supported.
 - `weight::Union{Nothing, Float64} = nothing`.
@@ -374,3 +328,60 @@ function updateH!(sysenv::StateEnvs{ProjCouplingModel_MPS}, H::CouplingModel, Ms
 end
 
 #################################################################################
+
+"""
+    nsite(sysenv::StateEnvs)
+
+Returns the `nsite` of the environment. `nsite = 1` for single-site environment,
+`nsite = 2` for two-site environmrnt, and so on.
+ Currently, only uses `nsite = 0`, `1`, or `2`.
+"""
+nsite(sysenv::StateEnvs) = nsite(sysenv.PH)
+
+#################################################################################
+
+"""
+    set_nsite!(sysenv::StateEnvs, nsite::Int)
+
+Set `nsite` of the environment. `nsite = 1` for single-site environment,
+`nsite = 2` for two-site environmrnt, and so on.
+ Currently, only uses `nsite = 0`, `1`, or `2`.
+""" 
+function set_nsite!(sysenv::StateEnvs, nsite::Int)
+    set_nsite!(sysenv.PH, nsite)
+    return sysenv
+end
+
+#################################################################################
+
+"""
+    position!(sysenv::StateEnvs, pos::Int)
+
+Compute the left and right environments at position `pos`.
+"""
+function position!(sysenv::StateEnvs, pos::Int)
+    position!(sysenv.PH, sysenv.psi, pos)
+    return sysenv
+end
+
+#################################################################################
+
+
+"""
+    Base.copy(sysenv::StateEnvs)
+
+Shallow copy of `StateEnvs`.
+"""
+Base.copy(sysenv::StateEnvs) = StateEnvs(Base.copy(sysenv.psi), Base.copy(sysenv.PH))
+
+#################################################################################
+
+"""
+    Base.length(sysenv::StateEnvs)
+
+Returns the length of the underlying MPS/Environment.
+"""
+Base.length(sysenv::StateEnvs) = Base.length(sysenv.psi)
+
+#################################################################################
+

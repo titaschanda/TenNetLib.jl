@@ -93,6 +93,7 @@ Compute the `Matrix-Vector` product between ProjMPO_MPS2 and input ITensor `v`.
 """
 function product(P::ProjMPO_MPS2, v::ITensor)::ITensor
     Pv = P.PH(v)
+    # TODO: check for parallel option
     for p in P.pm
         Pv += P.weight * product(p, v)
     end
