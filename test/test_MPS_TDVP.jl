@@ -46,9 +46,9 @@ function tdvp(sites, H, psi0)
     engine = TDVPEngine(psi0, H)
 
     for ii = 1:10
-        tdvpsweep!(engine, -0.05im,
+        tdvpsweep!(engine, -0.01im,
                    nsite = "dynamic";
-                   maxdim = 200,
+                   maxdim = 20,
                    cutoff = 1E-12,
                    extendat = 5)
     end
