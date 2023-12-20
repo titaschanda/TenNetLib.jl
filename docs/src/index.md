@@ -13,5 +13,5 @@ The documentation for TeNLib can be found [**here**](https://titaschanda.github.
 ## Overview
 
 Currently, TeNLib contains codes for
-*(a)* Finite-size Matrix-Product States (MPS): Different varaints of DMRG and TDVP (including subspace expansion).
-*(b)* Tree Tensor Network (TTN): Variational search for the ground state and first few excited states.
+* *(a)* Finite-size Matrix-Product States (MPS): Different varaints of DMRG and TDVP (including subspace expansion).
+* *(b)* Tree Tensor Network (TTN): Variational search for the ground state and first few excited states.
