@@ -10,6 +10,9 @@ settings = Dict(
     :pages =>
         [
             "Introduction" => "index.md"
+            "MPS based methods" => [
+                "StateEnvs" => "mps/state_envs.md"
+                ]
             "DMRG" => "dmrg.md"
         ],
     :format => Documenter.HTML(; assets=["assets/favicon.ico"], prettyurls=false),
