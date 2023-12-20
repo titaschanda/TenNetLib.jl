@@ -13,8 +13,8 @@ The documentation for TeNLib can be found [**here**](https://titaschanda.github.
 ## Overview
 
 TeNLib features popular Tensor Network (TN) codes with multi-layered abstraction, that provides varyling level of control to the user. Currently, TeNLib contains codes for
-* *(a)* Finite-size Matrix-Product States (MPS): Different variants of DMRG and TDVP (including subspace expansion).
-* *(b)* Tree Tensor Network (TTN): Variational search for the ground state and first few excited states.
+* *(a)* **Finite-size Matrix-Product States (MPS)**: Different variants of DMRG and TDVP (including subspace expansion).
+* *(b)* **Tree Tensor Network (TTN)**: Variational search for the ground state and first few excited states.
 
 
 ## Installation
@@ -33,7 +33,7 @@ pkg> add https://github.com/titaschanda/TeNLib.jl
 
 ## Future functionality?
 
-Here is a list for future additions in the decreasing order of priority. Any help / suggestions will be helpful.
+Here is a list for future additions in the decreasing order of priority. Any help / suggestion is welcome.
 * Augmented Tree Tensor Network (aTTN) for variational ground state search for 2D problems.
 * Infinite DMRG (iDMRG) and/or Variational Uniform Matrix Product States (VUMPS) to tackle 1D / quasi-1D problems directly at the thermodynamic limit.
 * Projected Entangled Pair States (PEPS) for 2D problems.
