@@ -8,4 +8,10 @@ A Tensor Network Library (TeNLib) built on top of [ITensors.jl](https://github.c
 
 The source code for TeNLib can be found on [GitHub](https://github.com/titaschanda/TeNLib.jl)
 
-The documentation for TeNLib can be found [*here*](https://titaschanda.github.io/TeNLib.jl/dev/).
+The documentation for TeNLib can be found [**here**](https://titaschanda.github.io/TeNLib.jl/dev/).
+
+## Overview
+
+Currently, TeNLib contains codes for
+*(a)* Finite-size Matrix-Product States (MPS): Different varaints of DMRG and TDVP (including subspace expansion).
+*(b)* Tree Tensor Network (TTN): Variational search for the ground state and first few excited states.
