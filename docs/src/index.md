@@ -13,7 +13,7 @@ The documentation for TeNLib can be found [**here**](https://titaschanda.github.
 ## Overview
 
 TeNLib features popular Tensor Network (TN) codes with multi-layered abstraction, that provides varyling level of control to the user. Currently, TeNLib contains codes for
-* *(a)* Finite-size Matrix-Product States (MPS): Different varaints of DMRG and TDVP (including subspace expansion).
+* *(a)* Finite-size Matrix-Product States (MPS): Different variants of DMRG and TDVP (including subspace expansion).
 * *(b)* Tree Tensor Network (TTN): Variational search for the ground state and first few excited states.
 
 
@@ -41,7 +41,7 @@ Here is a list for future additions in the decreasing order of priority. Any hel
 
 ## Example: A simple DMRG code
 
-The following code is for a simple DMRG run at the highest level of abstraction without any additional control.
+The following code is for a simple DMRG run at **the highest level of abstraction without any additional control**.
 
 ```
 using ITensors
@@ -49,16 +49,16 @@ using TeNLib
 
 let
     N = 32
-    sites = siteinds("S=1/2",N; conserve_qns = qn)
-    os = OpStrings()
+    sites = siteinds("S=1/2",N)
+    os = OpSum()
     
     for j=1:N-1
-        os += 1, "Sz" => j,"Sz" => j+1
-        os += 0.5, "S+" =>j, "S-" => j+1
-        os += 0.5, "S-"=>j, "S+" => j+1
+        os += 1, "Sz", j,"Sz", j+1
+        os += 0.5, "S+", j, "S-", j+1
+        os += 0.5, "S-", j, "S+", j+1
     end
     
-    H = CouplingModel(os,sites)
+    H = MPO(os,sites)
     states = [isodd(n) ? "Up" : "Dn" for n in 1:N]
     psi0 = MPS(sites, states)
 
@@ -70,3 +70,79 @@ let
     en, psi = dmrg2(psi0, H, params)
 end
 ```
+
+## Example: A simple TDVP code
+
+The following code is for a simple TDVP run at **the highest level of abstraction without any additional control**.
+
+```
+using ITensors
+using TeNLib
+
+let
+    N = 32
+    sites = siteinds("S=1/2",N)
+    os = OpSum()
+    
+    for j=1:N-1
+        os += 1, "Sz", j,"Sz", j+1
+        os += 0.5, "S+", j, "S-", j+1
+        os += 0.5, "S-", j, "S+", j+1
+    end
+    
+    H = MPO(os,sites)
+    states = [isodd(n) ? "Up" : "Dn" for n in 1:N]
+    psi0 = MPS(sites, states)
+
+    tau = -0.01im    
+    engine = TDVPEngine(psi0, H)
+    for ii = 1:100
+
+    	# `nsite = "dynamic"` for dynamical selection between
+	# single- and two-site variants at different bonds
+        tdvpsweep!(engine, tau,
+                   nsite = "dynamic";
+                   maxdim = 200,
+                   cutoff = 1E-12,
+                   extendat = 5)
+
+	psi = getpsi(engine)
+	# DO STUFF
+    end
+end
+```
+
+## Example: A simple TTN ground-state optimzation code
+
+The following code is for a simple TTN ground-state optimzation run at **the highest level of abstraction without any additional control**.
+Here we use `OpStrings` and `CouplingModel` instead of `OpSum` and `MPO`.
+
+```
+using ITensors
+using TeNLib
+
+let
+    N = 32
+    sites = siteinds("S=1/2",N)
+    os = OpStrings()
+    
+    for j=1:N-1
+        os += 1, "Sz" => j,"Sz" => j+1
+        os += 0.5, "S+" =>j, "S-" => j+1
+        os += 0.5, "S-"=>j, "S+" => j+1
+    end
+    
+    H = CouplingModel(os,sites)
+    psi0 = TTN(sites, 64, QN("Sz", 0))
+
+    sweeppath = default_sweeppath(psi0)
+    
+    params = OptimizeParamsTTN(; maxdim = [64, 128], nsweeps = [5, 10], 
+                               cutoff = 1e-14, noise = 1e-2, noisedecay = 5, 
+                               disable_noise_after = 5)
+			       
+    en, psi = optimize(psi0, H, params, sweeppath)
+end
+```
+**Note:** `OpStrings` and `CouplingModel` can be also used for MPS based codes without modifying other parts of the code.
+    
