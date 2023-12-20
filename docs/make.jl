@@ -23,7 +23,7 @@ settings = Dict(
                 
 ############################################################################
 
-makedocs(; sitename=sitename, settings...)
+makedocs(; sitename=sitename, order = [:source], settings...)
 
 ############################################################################
 
