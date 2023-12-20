@@ -6,5 +6,4 @@ Skip this part if you want to avoid lower-level abstraction.
 ```@autodocs
 Modules = [TeNLib]
 Pages   = ["mps/state_envs.jl"]
-order   = [:source]
 ```

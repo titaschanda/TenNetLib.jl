@@ -2,17 +2,12 @@
 #################################################################################
 
 """
-    mutable struct StateEnvs{T <: Union{ProjMPO,
-                                        ProjMPO_MPS2,
-                                        ProjMPOSum2,
-                                        ProjMPOSum_MPS,
-                                        ProjCouplingModel,
-                                        ProjCouplingModel_MPS}}
+    mutable struct StateEnvs{T}
         psi::MPS
         PH::T
     end
 
-Holds state `psi` and environment `PH`.
+Holds the MPS state `psi` and its environment `PH`.
 """
 mutable struct StateEnvs{T <: Union{ProjMPO,
                                     ProjMPO_MPS2,
