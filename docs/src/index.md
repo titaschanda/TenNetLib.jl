@@ -1,4 +1,11 @@
+# TeNLib
 
-Documentation for `ITensorsMPS.jl`.
+A Tensor Network Library (TeNLib) built on top of [ITensors.jl](https://github.com/ITensor/ITensors.jl) for quantum many-body problems.
 
-[`dmrg!`](@ref)
+| **Build Status** | **Documentation** |
+|:----------------:|:-----------------:|
+| [![Build Status](https://github.com/titaschanda/TeNLib.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/titaschanda/TeNLib.jl/actions/workflows/CI.yml?query=branch%3Amain) | [![Build Status](https://github.com/titaschanda/TeNLib.jl/actions/workflows/documentation.yml/badge.svg?branch=main)](https://github.com/titaschanda/TeNLib.jl/actions/workflows/documentation.yml?query=branch%3Amain) |
+
+The source code for TeNLib can be found on [GitHub](https://github.com/titaschanda/TeNLib.jl)
+
+The documentation for TeNLib can be found [*here*](https://titaschanda.github.io/TeNLib.jl/dev/).
