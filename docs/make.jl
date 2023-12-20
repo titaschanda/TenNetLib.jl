@@ -1,5 +1,6 @@
 push!(LOAD_PATH,"../src/")
 
+using ITensors, DataStructures
 using Documenter, TeNLib
 
 ############################################################################
@@ -11,9 +12,13 @@ settings = Dict(
         [
             "Introduction" => "index.md"
             "MPS based methods" => [
-                "StateEnvs" => "mps/state_envs.md"
+                "StateEnvs" => "mps/state_envs.md",
+                "Perform local updates" => "mps/update_site.md",
+                "Sweeping through the MPS" => "mps/sweep.md",
+                "Performing DMRG" => "mps/dmrg.md",
+                "Example: DMRG" => "mps/example_dmrg.md",
+                "Performing TDVP" => "mps/tdvp.md"
                 ]
-            "DMRG" => "dmrg.md"
         ],
     :format => Documenter.HTML(; assets=["assets/favicon.ico"], prettyurls=false),
     :doctest => true,

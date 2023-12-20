@@ -2,19 +2,26 @@
 #################################################################################
 
 """
-    mutable struct StateEnvs{T}
+    mutable struct StateEnvs{T <: Union{ProjMPO,
+                                  ProjMPO_MPS2,
+                                  ProjMPOSum2,
+                                  ProjMPOSum_MPS,
+                                  ProjCouplingModel,
+                                  ProjCouplingModel_MPS}
+                            }
         psi::MPS
         PH::T
     end
 
-Holds the MPS state `psi` and its environment `PH`.
+Holds the MPS state `psi` and its environments `PH`.
 """
 mutable struct StateEnvs{T <: Union{ProjMPO,
                                     ProjMPO_MPS2,
                                     ProjMPOSum2,
                                     ProjMPOSum_MPS,
                                     ProjCouplingModel,
-                                    ProjCouplingModel_MPS}}
+                                    ProjCouplingModel_MPS}
+                         }
     psi::MPS
     PH::T
 end
@@ -325,7 +332,7 @@ end
 #################################################################################
 
 """
-    nsite(sysenv::StateEnvs)
+    function nsite(sysenv::StateEnvs)
 
 Returns the `nsite` of the environment. `nsite = 1` for single-site environment,
 `nsite = 2` for two-site environmrnt, and so on.
@@ -336,7 +343,7 @@ nsite(sysenv::StateEnvs) = nsite(sysenv.PH)
 #################################################################################
 
 """
-    set_nsite!(sysenv::StateEnvs, nsite::Int)
+    function set_nsite!(sysenv::StateEnvs, nsite::Int)
 
 Set `nsite` of the environment. `nsite = 1` for single-site environment,
 `nsite = 2` for two-site environmrnt, and so on.
@@ -350,7 +357,7 @@ end
 #################################################################################
 
 """
-    position!(sysenv::StateEnvs, pos::Int)
+    function position!(sysenv::StateEnvs, pos::Int)
 
 Compute the left and right environments at position `pos`.
 """
@@ -363,7 +370,7 @@ end
 
 
 """
-    Base.copy(sysenv::StateEnvs)
+    function Base.copy(sysenv::StateEnvs)
 
 Shallow copy of `StateEnvs`.
 """
@@ -372,7 +379,7 @@ Base.copy(sysenv::StateEnvs) = StateEnvs(Base.copy(sysenv.psi), Base.copy(sysenv
 #################################################################################
 
 """
-    Base.length(sysenv::StateEnvs)
+    function Base.length(sysenv::StateEnvs)
 
 Returns the length of the underlying MPS/Environment.
 """

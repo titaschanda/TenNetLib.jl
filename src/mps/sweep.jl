@@ -19,6 +19,10 @@ Holds historical data after each (full)sweep. Requires for convergence check etc
  - `maxtrucerr::Vector{Float64}`: Maximum truncation error after every sweep.
  - `lasteigs::Vector{Vector{Float64}}`: Spectrum of eigenvalues at each bond after
    previous halfsweep.
+
+#### Default constructor:
+ - `SweepData()`: Initialize an empty `SweepData` object. Required to call following functions
+at the first time.
 """
 mutable struct SweepData
     sweepcount::Int
@@ -49,7 +53,7 @@ Base.copy(swdata::SweepData) = SweepData(swdata.sweepcount,
 
 """
     function fullsweep!(sysenv::StateEnvs, solver, nsite::Int, swdata::SweepData;
-                        kwargs...)::Tuple{Float64, Float64}
+                        kwargs...)
 
 Perform a fullsweep (left-to-right and right-to-left) by `solver`.
 
@@ -73,7 +77,7 @@ Perform a fullsweep (left-to-right and right-to-left) by `solver`.
    every fullsweep, if `2` prints at every update step.
 
 #### Named arguments for `solver` and their default values:
-See documentation of KrylovKit.jl.
+See the documentation of KrylovKit.jl.
  - `ishermitian::Bool = true`
  - `solver_tol::Float64 = 1E-14` if `eig_solver`, `1E-12` if `exp_solver`.
  - `solver_krylovdim::Int = 5` if `eig_solver`, `30` if `exp_solver`.
@@ -85,7 +89,8 @@ See documentation of KrylovKit.jl.
 #### Return values:
  - `::Float64`: Change in Energy ΔE
  - `::Float64`: Change in Entropy ΔS
- - ⇒ `swdata::SweepData` gets updated.
+
+`swdata::SweepData` gets updated.
 """
 function fullsweep!(sysenv::StateEnvs, solver, nsite::Int, swdata::SweepData;
                     kwargs...)::Tuple{Float64, Float64}
@@ -188,14 +193,15 @@ end
 
 """
     function dynamic_fullsweep!(sysenv::StateEnvs, solver, swdata::SweepData;
-                                kwargs...)::Tuple{Float64, Float64}
+                                kwargs...)
 
 Perform a dynamic fullsweep (left-to-right and right-to-left) by `solver`.
 The very first sweep, as dictated by `swdata.sweepcount=0`, Global Subspace Expansion
-is performed followed by a pure one-site sweep if `typeof(sysenv) == StateEnvs{ProjMPO}`,
-else performs a full two-site sweep. At each bond, if the lowest eigenvalue is below
-`eigthreshold` or the bond dimension at that bond has reached `maxdim`, performs
-single-site update across that bond, otherwise performs two-site update.
+(see below) is performed followed by a pure one-site sweep if
+`typeof(sysenv) == StateEnvs{ProjMPO}`, else performs a full two-site sweep. At each bond,
+if the lowest eigenvalue is below `eigthreshold` or the bond dimension at that bond
+has reached `maxdim` at a particular halfsweep, performs single-site update across
+that bond in the subsequent halfsweep, otherwise performs two-site update.
 
 #### Arguments:
  - `sysenv::StateEnvs`.
@@ -219,7 +225,7 @@ single-site update across that bond, otherwise performs two-site update.
    `typeof(sysenv) == StateEnvs{ProjMPO}`, else performs a full two-site sweep.
 
 #### Named arguments for `solver` and their default values:
-See documentation of KrylovKit.jl.
+See the documentation of KrylovKit.jl.
  - `ishermitian::Bool = true`
  - `solver_tol::Float64 = 1E-14` if `eig_solver`, `1E-12` if `exp_solver`.
  - `solver_krylovdim::Int = 3` if `eig_solver`, `30` if `exp_solver`.
@@ -239,7 +245,8 @@ See documentation of KrylovKit.jl.
 #### Return values:
  - `::Float64`: Change in Energy ΔE
  - `::Float64`: Change in Entropy ΔS
- - ⇒ `swdata::SweepData` gets updated.
+
+`swdata::SweepData` gets updated.
 """
 function dynamic_fullsweep!(sysenv::StateEnvs, solver, swdata::SweepData;
                             eigthreshold::Float64 = 1E-12,
@@ -365,30 +372,27 @@ end
 #################################################################################
 
 """
-    function krylov_extend!(psi::MPS, H::MPO;
-                            extension_krylovdim::Int = 3,
-                            extension_applyH_maxdim::Int,
-                            extension_applyH_cutoff::Float64 = Float64_threshold(),
-                            extension_cutoff::Float64 = 1E-10,
-                            )::MPS
+    function krylov_extend!(psi::MPS, H::MPO; kwargs...)
 
 Performs Global Subspace Expansion.
 
 #### Arguments and their default values:
- - `extension_krylovdim::Int = 4`: Number of Krylov vectors used for GSE.
- - `extension_applyH_maxdim::Int`: Maximum bond/link dimension for
-    the application of the MPO to the MPS.
+ - `extension_krylovdim::Int = 3`: Number of Krylov vectors used for GSE.
  - `extension_applyH_cutoff::Float64 = Float64_threshold()`: Cutoff for the application
-    the MPO to the MPS.
+   the MPO to the MPS.
+ - `extension_applyH_maxdim::Int = maxlinkdim(psi) + 1`: Maximum bond/link
+   dimension of the resulting MPS after the application of the MPO to the MPS.
  - `extension_cutoff::Float64 = 1E-10`: Cutoff for the basis extension step in GSE.
-
 """
-function krylov_extend!(psi::MPS, H::MPO;
-                        extension_krylovdim::Int = 3,
-                        extension_applyH_maxdim::Int,
-                        extension_applyH_cutoff::Float64 = Float64_threshold(),
-                        extension_cutoff::Float64 = 1E-10,
-                        )::MPS
+function krylov_extend!(psi::MPS, H::MPO; kwargs...)
+
+    extension_krylovdim::Int = get(kwargs, :extension_krylovdim, 3)
+    extension_applyH_cutoff::Float64 = get(kwargs, :extension_applyH_cutoff,
+                                           Float64_threshold())
+    extension_applyH_maxdim::Int = get(kwargs, :extension_applyH_maxdim,
+                                       maxlinkdim(sysenv.psi) + 1)
+    extension_cutoff::Float64 = get(kwargs, :extension_cutoff,
+                                    1E-10)
     
     phis = Vector{MPS}(undef, extension_krylovdim)
         
@@ -400,42 +404,29 @@ function krylov_extend!(psi::MPS, H::MPO;
         normalize!(phis[k])
     end
     _krylov_addbasis!(psi, phis, extension_cutoff)
-    return psi
+    return nothing
 end
     
 #################################################################################
 
 """
-    function krylov_extend!(sysenv::StateEnvs{ProjMPO}; kwargs...)::Nothing
+    function krylov_extend!(sysenv::StateEnvs{ProjMPO}; kwargs...)
 
-Performs Global Subspace Expansion.
+Performs Global Subspace Expansion. The `StateEnvs` must be created by a single MPO.
 
 #### Arguments and their default values:
  - `extension_krylovdim::Int = 3`: Number of Krylov vectors used for GSE.
  - `extension_applyH_cutoff::Float64 = Float64_threshold()`: Cutoff for the application
    the MPO to the MPS.
- - `extension_applyH_maxdim::Int = maxlinkdim(psi) + 1`: Maximum bond/link dimension for
-   the application of the MPO to the MPS.
+ - `extension_applyH_maxdim::Int = maxlinkdim(psi) + 1`: Maximum bond/link
+   dimension of the resulting MPS after the application of the MPO to the MPS.
  - `extension_cutoff::Float64 = 1E-10`: Cutoff for the basis extension step in GSE.
 """
 function krylov_extend!(sysenv::StateEnvs{ProjMPO}; kwargs...)::Nothing
-
-    extension_krylovdim::Int = get(kwargs, :extension_krylovdim, 3)
-    extension_applyH_cutoff::Float64 = get(kwargs, :extension_applyH_cutoff,
-                                           Float64_threshold())
-    extension_applyH_maxdim::Int = get(kwargs, :extension_applyH_maxdim,
-                                       maxlinkdim(sysenv.psi) + 1)
-    extension_cutoff::Float64 = get(kwargs, :extension_cutoff,
-                                    1E-10)
     
     kr_time = @elapsed begin
 
-        krylov_extend!(sysenv.psi, sysenv.PH.H;
-                       extension_krylovdim = extension_krylovdim,
-                       extension_applyH_maxdim = extension_applyH_maxdim,
-                       extension_applyH_cutoff = extension_applyH_cutoff,
-                       extension_cutoff = extension_cutoff
-                       )
+        krylov_extend!(sysenv.psi, sysenv.PH.H; kwargs...)
         
         sysenv.PH.lpos = 0
         sysenv.PH.rpos = length(sysenv.PH.H) + 1

@@ -17,7 +17,7 @@ Holds parameters to control DMRG sweeps.
  - `cutoff::Vector{Float64}`: Cutoff for SVD truncation at each stages of DMRG.
  - `noise::Vector{Float64}`: Noise level at each stages of DMRG.
  - `noisedecay::Vector{Float64}`: Decay of noise level at each states of DMRG.
-Noise is divided by `noisedecay` after each sweep.
+   Noise is divided by `noisedecay` after each sweep.
  - `disable_noise_after::Vector{Int}`: Switch of noise after this many sweeps at each
 states of DMRG.
 
@@ -55,19 +55,19 @@ Base.copy(params::DMRGParams) = DMRGParams(Base.copy(params.maxdim),
                         noisedecay::Union{Vector{Float64}, Float64, Int} = 1.0,
                         disable_noise_after::Union{Vector{Int}, Int} = typemax(Int))
 
-Constructor for `DMRGParams`. Takes named arguments.
+Constructor for `DMRGParams`. Takes only named arguments.
  - `maxdim::Vector{Int}`: Maximum allowed MPS bond/link dimensions at each stages of DMRG.
  - `nsweeps::Vector{Int}`: Number of sweeps to be performed at each statges of DMRG.
  - `cutoff::Union{Float64, Vector{Float64}} = Float64_threshold()`: Cutoff for SVD truncation
    at each stages of DMRG. If `Float64`, `cutoff` remains same throughout the DMRG simulation. 
  - `noise::Union{Float64, Int, Vector{Float64}} = 0.0`: Noise level at each stages of DMRG.
-   If `Float64` / `Int`, initial `noise` remains same throughout the DMRG simulation.
+   If `Float64` or `Int`, initial `noise` remains same throughout the DMRG simulation.
  - `noisedecay::Union{Float64, Int, Vector{Float64}} = 1.0`: Decay of noise level at each states
-   of DMRG. Noise is divided by `noisedecay` after each sweep. If `Float64` / `Int`, `noisedecay`
-remains same throughout the DMRG simulation.
+   of DMRG. Noise is divided by `noisedecay` after each sweep. If `Float64` or `Int`, `noisedecay`
+   remains same throughout the DMRG simulation.
  - `disable_noise_after::Union{Int, Vector{Int}} = typemax(Int)`: Switch of noise after this
-many sweeps at each states of DMRG. If `Int`, `disable_noise_after` remains same throughout the
-DMRG simulation.
+   many sweeps at each states of DMRG. If `Int`, `disable_noise_after` remains same throughout the
+   DMRG simulation.
 """
 function DMRGParams(;maxdim::Vector{Int}, nsweeps::Vector{Int}, 
                     cutoff::Union{Vector{Float64}, Float64} = Float64_threshold(),
@@ -104,7 +104,7 @@ end
 #################################################################################
 
 """
-    dmrg!(sysenv::StateEnvs, params::DMRGParams, nsite::Int; kwargs...)::SweepData
+    function dmrg!(sysenv::StateEnvs, params::DMRGParams, nsite::Int; kwargs...)
 
 Performs DMRG.
 
@@ -133,7 +133,7 @@ When both `energyErrGoal` and `entropyErrGoal` are given, both conditions must b
 to trigger this early stopping.
 
 #### Named arguments for `solver` and their default values:
-See documentation of KrylovKit.jl.
+See the documentation of KrylovKit.jl.
  - `ishermitian::Bool = true`
  - `solver_tol::Float64 = 1E-14`.
  - `solver_krylovdim::Int = 5`.
@@ -246,22 +246,19 @@ end
 #################################################################################
 
 """
-    dmrg2(psi0::MPS, H::MPO, params::DMRGParams; kwargs...)::Tuple{Float64, MPS}
-    dmrg2(psi0::MPS, H::CouplingModel, params::DMRGParams; kwargs...)::Tuple{Float64, MPS}
-    dmrg2(psi0::MPS, Hs::Vector{MPO}, params::DMRGParams; kwargs...)::Tuple{Float64, MPS}
-    dmrg2(psi0::MPS, H::MPO, Ms::Vector{MPS}, params::DMRGParams; kwargs...)::Tuple{Float64, MPS}
-    dmrg2(psi0::MPS, Hs::Vector{MPO}, Ms::Vector{MPS}, params::DMRGParams; kwargs...)::Tuple{Float64, MPS}
-    dmrg2(psi0::MPS, H::CouplingModel, Ms::Vector{MPS}, params::DMRGParams; kwargs...)::Tuple{Float64, MPS}
+    function dmrg2(psi0::MPS, H::MPO, params::DMRGParams; kwargs...)
+    function dmrg2(psi0::MPS, H::CouplingModel, params::DMRGParams; kwargs...)
+    function dmrg2(psi0::MPS, Hs::Vector{MPO}, params::DMRGParams; kwargs...)
+    function dmrg2(psi0::MPS, H::MPO, Ms::Vector{MPS}, params::DMRGParams; kwargs...)
+    function dmrg2(psi0::MPS, Hs::Vector{MPO}, Ms::Vector{MPS}, params::DMRGParams; kwargs...)
+    function dmrg2(psi0::MPS, H::CouplingModel, Ms::Vector{MPS}, params::DMRGParams; kwargs...)
 
 Performs two-site DMRG.
 
 #### Arguments:
  - `psi0::MPS`: Initial MPS.
- - `H::MPO` / `H::CouplingModel` / `Hs:Vector{MPO}` / `H::MPO`
-   and `Ms::Vector{MPS}` / `H::CouplingModel` and `Ms::Vector{MPS}`.
+ - `H::MPO`, `H::CouplingModel`, `Hs::Vector{MPO}`, `Ms::Vector{MPS}`.
  - `params::DMRGParams`.
- - `nsite::Int` of the environment. Either `1` or `2` for one-site or
-   two-site update respectively.
 
 #### Named arguments and their default values:
  - `normalize::Bool = true`: Whether to normalize after update.
@@ -282,7 +279,7 @@ When both `energyErrGoal` and `entropyErrGoal` are given, both conditions must b
 to trigger this early stopping.
 
 #### Named arguments for `eig_solver` and their default values:
-See documentation of KrylovKit.jl.
+See the documentation of KrylovKit.jl.
  - `ishermitian::Bool = true`
  - `solver_tol::Float64 = 1E-14`.
  - `solver_krylovdim::Int = 5`.
@@ -305,12 +302,12 @@ dmrg2(psi0::MPS, H::T, Ms::Vector{MPS}, params::DMRGParams;
 
 
 """
-    dmrg1(psi0::MPS, H::MPO, params::DMRGParams; kwargs...)::Tuple{Float64, MPS}
-    dmrg1(psi0::MPS, H::CouplingModel, params::DMRGParams; kwargs...)::Tuple{Float64, MPS}
-    dmrg1(psi0::MPS, Hs::Vector{MPO}, params::DMRGParams; kwargs...)::Tuple{Float64, MPS}
-    dmrg1(psi0::MPS, H::MPO, Ms::Vector{MPS}, params::DMRGParams; kwargs...)::Tuple{Float64, MPS}
-    dmrg1(psi0::MPS, Hs::Vector{MPO}, Ms::Vector{MPS}, params::DMRGParams; kwargs...)::Tuple{Float64, MPS}
-    dmrg1(psi0::MPS, H::CouplingModel, Ms::Vector{MPS}, params::DMRGParams; kwargs...)::Tuple{Float64, MPS}    
+    function dmrg1(psi0::MPS, H::MPO, params::DMRGParams; kwargs...)
+    function dmrg1(psi0::MPS, H::CouplingModel, params::DMRGParams; kwargs...)
+    function dmrg1(psi0::MPS, Hs::Vector{MPO}, params::DMRGParams; kwargs...)
+    function dmrg1(psi0::MPS, H::MPO, Ms::Vector{MPS}, params::DMRGParams; kwargs...)
+    function dmrg1(psi0::MPS, Hs::Vector{MPO}, Ms::Vector{MPS}, params::DMRGParams; kwargs...)
+    function dmrg1(psi0::MPS, H::CouplingModel, Ms::Vector{MPS}, params::DMRGParams; kwargs...)
 
 Performs single-site DMRG. All other details are same as in [`dmrg2`](@ref).
 """

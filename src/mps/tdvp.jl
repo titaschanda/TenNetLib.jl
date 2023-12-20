@@ -9,8 +9,8 @@
                                          ProjCouplingModel,
                                          ProjCouplingModel_MPS}}
 
-Holds the state, sweep data, and absolute elpased time for TDVP simulations.
- - `sysenv::StateEnvs`: Holds the state psi and environment PH.
+Holds the `MPS` state, `SweepData`, and absolute elpased time for TDVP simulations.
+ - `sysenv::StateEnvs`: Holds the state psi and environments PH.
  - `swdata::SweepData`: Holds the historical data after each (full)sweep.
  - `abstime::Float64`: Absolute elapsed time.
 """
@@ -38,9 +38,9 @@ Base.copy(engine::TDVPEngine) = TDVPEngine(Base.copy(engine.sysenv),
 #################################################################################
 
 """
-    TDVPEngine(psi::MPS, H::{T}) where T <: Union{MPO, Vector{MPO}, CouplingModel}
+    function TDVPEngine(psi::MPS, H::{T}) where T <: Union{MPO, Vector{MPO}, CouplingModel}
 
-Constructor of the `TDVPEngine`.
+Constructor of the `TDVPEngine` from different forms of Hamiltonians.
 """
 function TDVPEngine(psi::MPS, H::T) where T <: Union{MPO, Vector{MPO}, CouplingModel}
     sysenv = StateEnvs(psi, H)
@@ -51,10 +51,10 @@ end
 #################################################################################
 
 """
-    TDVPEngine(psi::MPS, H::T, Ms::Vector{MPS};
-               weight::Float64) where T <: Union{MPO, Vector{MPO}, CouplingModel}
+    function TDVPEngine(psi::MPS, H::T, Ms::Vector{MPS};
+                        weight::Float64) where T <: Union{MPO, Vector{MPO}, CouplingModel}
 
-Constructor of `TDVPEngine`.
+Constructor of `TDVPEngine` from different forms of Hamiltonians and a vector of MPS.
 """
 function TDVPEngine(psi::MPS, H::T, Ms::Vector{MPS};
                     weight::Float64) where T <: Union{MPO, Vector{MPO}, CouplingModel}
@@ -66,7 +66,7 @@ end
 #################################################################################
 
 """
-    getpsi(engine::TDVPEngine)
+    function getpsi(engine::TDVPEngine)
 
 Returns (shallow copy of) the state psi.
 """
@@ -77,7 +77,7 @@ end
 #################################################################################
 
 """
-    sweepcount(engine::TDVPEngine)
+    function sweepcount(engine::TDVPEngine)
 
 Returns the number of sweeps performed.
 """
@@ -86,7 +86,7 @@ sweepcount(engine::TDVPEngine) = engine.swdata.sweepcount
 #################################################################################
 
 """
-    getenergy(engine::TDVPEngine)
+    function getenergy(engine::TDVPEngine)
 
 Returns the energy of the state psi.
 """
@@ -95,7 +95,7 @@ getenergy(engine::TDVPEngine) = engine.swdata.energy[end]
 #################################################################################
 
 """
-    getentropy(engine::TDVPEngine)
+    function getentropy(engine::TDVPEngine)
 
 Returns the mid-chain entropy of the state psi.
 """
@@ -104,7 +104,7 @@ getentropy(engine::TDVPEngine) = engine.swdata.entropy[end]
 #################################################################################
 
 """
-    maxchi(engine::TDVPEngine)
+    function maxchi(engine::TDVPEngine)
 
 Returns the maximum bond/link dimension of the state psi.
 """
@@ -113,7 +113,7 @@ maxchi(engine::TDVPEngine) = engine.swdata.maxchi[end]
 #################################################################################
 
 """
-    totalerror(engine::TDVPEngine)
+    function totalerror(engine::TDVPEngine)
 
 Returns the sum of the truncation errors of all the sweeps performed.
 """
@@ -122,7 +122,7 @@ totalerror(engine::TDVPEngine) = sum(engine.swdata.maxtruncerr)
 #################################################################################
 
 """
-    sweeperror(engine::TDVPEngine)
+    function sweeperror(engine::TDVPEngine)
 
 Returns the truncation error in the last sweep.
 """
@@ -139,8 +139,8 @@ Performs Global Subspace Expansion.
  - `extension_krylovdim::Int = 3`: Number of Krylov vectors used for GSE.
  - `extension_applyH_cutoff::Float64 = Float64_threshold()`: Cutoff for the application
    the MPO to the MPS.
- - `extension_applyH_maxdim::Int = maxlinkdim(psi) + 1`: Maximum bond/link dimension for
-   the application of the MPO to the MPS.
+ - `extension_applyH_maxdim::Int = maxlinkdim(psi) + 1`: Maximum bond/link
+   dimension of the resulting MPS after the application of the MPO to the MPS.
  - `extension_cutoff::Float64 = 1E-10`: Cutoff for the basis extension step in GSE.
 """
 krylov_extend!(engine::TDVPEngine{ProjMPO}; kwargs...) =
@@ -149,7 +149,7 @@ krylov_extend!(engine::TDVPEngine{ProjMPO}; kwargs...) =
 #################################################################################
 
 """
-    sweepdata(engine::TDVPEngine)
+    function sweepdata(engine::TDVPEngine)
 
 Returns the (shallow copy of) `SweepData`.
 """
@@ -158,7 +158,7 @@ sweepdata(engine::TDVPEngine) = engine.swdata
 #################################################################################
 
 """
-    abstime(engine::TDVPEngine)
+    function abstime(engine::TDVPEngine)
 
 Returns the absolute elapsed time.
 """
@@ -167,11 +167,12 @@ abstime(engine::TDVPEngine) = engine.abstime
 #################################################################################
 
 """
-    updateH!(engine::TDVPEngine, H::T;
-             recalcEnv::Bool = true) where T <: Union{MPO, Vector{MPO}, CouplingModel}
+    function updateH!(engine::TDVPEngine, H::T;
+                      recalcEnv::Bool = true) where T <: Union{MPO, Vector{MPO}, CouplingModel}
 
 Update Hamiltonian `H` in `engine::TDVPEngine`. If `recalcEnv = false`,
-it reuses previous environments. Only defined for `MPO`.
+it reuses previous environments. `recalcEnv = false` is only defined when the
+`TDVPEngine` is created from a single `MPO`.
 """
 updateH!(engine::TDVPEngine, H::T;
          recalcEnv::Bool = true) where T <: Union{MPO, Vector{MPO}, CouplingModel} =
@@ -180,9 +181,9 @@ updateH!(engine::TDVPEngine, H::T;
 #################################################################################
 
 """
-    updateH!(engine::TDVPEngine, H::T, Ms::Vector{MPS};
-             weight::Float64,
-             recalcEnv::Bool = true) where T <: Union{MPO, Vector{MPO}, CouplingModel}
+    function updateH!(engine::TDVPEngine, H::T, Ms::Vector{MPS};
+                      weight::Float64,
+                      recalcEnv::Bool = true) where T <: Union{MPO, Vector{MPO}, CouplingModel}
 
 Update Hamiltonian `H` in `engine::TDVPEngine`. `recalcEnv = false` is not supported.
 """
@@ -200,7 +201,7 @@ updateH!(engine::TDVPEngine, H::T, Ms::Vector{MPS};
                kwargs...)::Nothing
 
 Performs one TDVP sweep. Computes `ψ' = exp(time_step * H) * ψ`.
-Therefore, for real time dynamics with step `dt`, `time_step` should be `-im * dt`. 
+Therefore, for real-time dynamics with step `dt`, `time_step` should be `-im * dt`. 
 
 #### Arguments:
  - `engine::TDVPEngine`.
@@ -217,14 +218,15 @@ Therefore, for real time dynamics with step `dt`, `time_step` should be `-im * d
  - `svd_alg::String = "divide_and_conquer"`.
  - `outputlevel::Int = 1`. If `0` prints no information, for `1` outputs after every
    fullsweep, if `2` prints at every update step.
- - `eigthreshold::Float64 = 1E-12`. See [`dynamic_fullsweep!`](@ref).
+ - `eigthreshold::Float64 = 1E-12`. Only applicable for `nsite = "dynamic"`
+   (see [`dynamic_fullsweep!`](@ref)).
  - `extendat::Union{Nothing, Int} = nothing`: If specified, at every `extendat`th sweep,
    Global Subspace Expansion is performed followed by a pure one-site sweep if
    `typeof(sysenv) == StateEnvs{ProjMPO}`, else performs a full two-site sweep.
-   See [`dynamic_fullsweep!`](@ref).
+   Only applicable for `nsite = "dynamic"` (see [`dynamic_fullsweep!`](@ref)).
 
 #### Named arguments for `solver` and their default values:
-See documentation of KrylovKit.jl.
+See the documentation of KrylovKit.jl.
  - `ishermitian::Bool = true`
  - `solver_tol::Float64 = 1E-12`.
  - `solver_krylovdim::Int = 30`.
@@ -234,17 +236,18 @@ See documentation of KrylovKit.jl.
  - `solver_check_convergence::Bool = true`.
 
 #### Arguments for Global Subspace Expansion and their default values:
+Only applicable for `nsite = "dynamic"` (see [`dynamic_fullsweep!`](@ref)).
  - `extension_krylovdim::Int = 3`: Number of Krylov vectors used for GSE.
- - `extension_applyH_cutoff::Float64 = Float64_Threshold()`: Cutoff for the application
+ - `extension_applyH_cutoff::Float64 = Float64_threshold()`: Cutoff for the application
    the MPO to the MPS.
- - `extension_applyH_maxdim::Int = maxlinkdim(psi) + 1`: Maximum bond/link dimension for
-   the application of the MPO to the MPS.
+ - `extension_applyH_maxdim::Int = maxlinkdim(psi) + 1`: Maximum bond/link
+   dimension of the resulting MPS after the application of the MPO to the MPS.
  - `extension_cutoff::Float64 = 1E-10`: Cutoff for the basis extension step in GSE.
 """
 function tdvpsweep!(engine::TDVPEngine, time_step::Union{Float64, ComplexF64}; 
                     nsite::Union{Int, String} = "dynamic", 
                     solver = exp_solver,
-                    kwargs...)::Nothing
+                    kwargs...)
     
     if solver != exp_solver
         error("`solver` must be `exp_solver` for `tdvpsweep` !!")
