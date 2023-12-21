@@ -35,7 +35,8 @@ settings = Dict(
             ]
         ],
     :format => Documenter.HTML(
-        prettyurls = get(ENV, "CI", nothing) == "true"),
+        prettyurls = get(ENV, "CI", nothing) == "true",
+        description = "A Tensor Network Library (TeNLib.jl) built on top of ITensors.jl for quantum many-body problems."),
     :doctest => true,
     :checkdocs => :none,
 )
