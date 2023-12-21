@@ -43,6 +43,7 @@ control.
 ```
 sysenv = StateEnvs(psi0, H)
 nsite = 2 # two-site update
+
 swdata = dmrg!(sysenv, params, nsite)
 
 # Get energy from `Sweepdata`
@@ -63,7 +64,8 @@ Using such lower-level function, one can restart the simulation at later times
 change the Hamiltonian during DMRG simulations.
 
 
-Global Subspace Expansion can also be used to get rid of nasty local minimas (if needed).
+Global Subspace Expansion can also be used to get rid of nasty local minimas (if needed), if the `StateEnvs` is
+built from a single MPO.
 ```
 krylov_extend!(sysenv; extension_applyH_maxdim = 40)
 ```
