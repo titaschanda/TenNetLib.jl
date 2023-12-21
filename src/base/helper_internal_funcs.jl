@@ -2,7 +2,7 @@
 ################################################################################
 
 """
-    gen_rand_id() = rand(ITensors.index_id_rng(), IDType)
+    function gen_rand_id()
 
 Generates a random id.
 """
@@ -106,12 +106,12 @@ end
 #################################################################################
 
 """
-    combineinds(inds::Vector{Index};
-                maxdim::Union{Nothing, Int} = nothing, 
-                maxqnblocks::Union{Nothing, Int} = nothing,
-                kwargs...)::Index
+    function combineinds(inds::Vector{Index};
+                         maxdim::Union{Nothing, Int} = nothing, 
+                         maxqnblocks::Union{Nothing, Int} = nothing,
+                         kwargs...)
 
-Combine a vector of `Index` into one (like ITensor's `combiner`). `maxdim` is be the maximum
+Combine a vector of `Index` into one (like ITensors.jl's `combiner`). `maxdim` is be the maximum
 dimension of the output `Index`, `maxqnblocks` represents maximum number of QN blocks to retain
 in the output `Index`.
 """
@@ -161,10 +161,10 @@ end
 #################################################################################
 
 """
-    indexintersection(inds1::Vector{Index}, inds2::Vector{Index};
-                      maxdim::Union{Nothing, Int} = nothing,
-                      maxqnblocks::Union{Nothing, Int} = nothing,
-                      kwargs...)::Index
+    function indexintersection(inds1::Vector{Index}, inds2::Vector{Index};
+                               maxdim::Union{Nothing, Int} = nothing,
+                               maxqnblocks::Union{Nothing, Int} = nothing,
+                               kwargs...)
 
 Performs set intersection of two vectors of `Index`. `maxdim` is be the maximum
 dimension of the output `Index`, `maxqnblocks` represents maximum number of QN blocks to retain

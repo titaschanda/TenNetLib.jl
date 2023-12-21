@@ -9,7 +9,7 @@ export
     using_threaded_loop,
     enable_threaded_loop,
     disable_threaded_loop,
-    threaded_loop,
+    @threaded_loop,
 
     # base/typedef.jl
     Vector2,

@@ -1,13 +1,13 @@
 # Sweeping through the MPS
 
-At a lower level of abstraction, TeNLib allows to control each fullsweep
+At a lower level of abstraction, TeNLib.jl allows to control each fullsweep
 (left-to-right and right-to-left) manually to update `StateEnvs`.
 
 Skip this part if you want to avoid lower-level abstraction.
 
 ## `SweepData`
 
-TeNLib defines a struct, called  `SweepData`, to store essential data after each fullsweep.
+TeNLib.jl defines a struct, called  `SweepData`, to store essential data after each fullsweep.
 
 ```@docs
 SweepData
@@ -22,7 +22,7 @@ fullsweep!(sysenv::StateEnvs, solver, nsite::Int, swdata::SweepData; kwargs...)
 
 ## Perform a dynamical fullsweep
 
-TeNLib defines the following function to dynamically decide whether to perform single- or
+TeNLib.jl defines the following function to dynamically decide whether to perform single- or
 two-site update at each bond, depending on the entropy growth at the previous halfsweep.
 
 ```@docs

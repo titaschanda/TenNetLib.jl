@@ -20,7 +20,7 @@ end
 #################################################################################
 
 """
-    Graph{T}()
+    function Graph{T}()
 
 Contructor of empty `Graph`.
 """
@@ -29,10 +29,10 @@ Graph{T}() where T = Graph{T}(Set{T}(), Dict{T, Set{T}}())
 #################################################################################
 
 """
-    Graph{T}(nodes::Set{T}) where T
-    Graph{T}(nodes::Vector{T}) where T
+    function Graph{T}(nodes::Set{T}) where T
+    function Graph{T}(nodes::Vector{T}) where T
 
-Constructor of `Graph`.
+Constructor of `Graph` with a list of nodes and empty edges.
  - `nodes`: Intial nodes.
 """
 Graph{T}(nodes::Set{T}) where T = 
@@ -43,7 +43,7 @@ Graph{T}(nodes::Vector{T}) where T = Graph{T}(Set(nodes))
 #################################################################################
 
 """
-    Base.copy(graph::Graph{T}) where T
+    function Base.copy(graph::Graph{T}) where T
 
 Shallow copy of `Graph`.
 """
@@ -58,7 +58,7 @@ end
 #################################################################################
 
 """
-    Base.getindex(graph::Graph{T}, node::T) where T
+    function Base.getindex(graph::Graph{T}, node::T) where T
 
 Returns the `edges` for a given `node::T` as an index. 
 """
@@ -68,8 +68,8 @@ Base.getindex(graph::Graph{T}, node::T) where T =
 #################################################################################
 
 """
-    Base.setindex!(graph::Graph{T}, neighbors::Set{T}, node::T) where T
-    Base.setindex!(graph::Graph{T}, neighbors::Vector{T}, node::T) where T
+    function Base.setindex!(graph::Graph{T}, neighbors::Set{T}, node::T) where T
+    function Base.setindex!(graph::Graph{T}, neighbors::Vector{T}, node::T) where T
 
 Sets the `edges=neighbors` for a given `node::T` as an index.
 """
@@ -85,7 +85,7 @@ Base.setindex!(graph::Graph{T}, neighbors::Vector{T}, node::T) where T =
 #################################################################################
 
 """
-    Base.:(==)(graph1::Graph{T}, graph2::Graph{T}) where T
+    function Base.:(==)(graph1::Graph{T}, graph2::Graph{T}) where T
 
 Equality between two `Graph` objects.
 """
@@ -96,7 +96,7 @@ Base.:(==)(graph1::Graph{T}, graph2::Graph{T}) where T =
 #################################################################################
 
 """
-    getnodes(graph::Graph{T}) where T = copy(graph.nodes)
+    function getnodes(graph::Graph{T}) where T = copy(graph.nodes)
 
 Returns (shallow copy of) nodes in the `Graph`.
 """
@@ -105,7 +105,7 @@ getnodes(graph::Graph{T}) where T = copy(graph.nodes)
 #################################################################################
 
 """
-    hasnode(graph::Graph{T}, node::T) where T
+    function hasnode(graph::Graph{T}, node::T) where T
 
 Checks whether a node is in the `Graph`.
 """
@@ -114,7 +114,7 @@ hasnode(graph::Graph{T}, node::T) where T = node in graph.nodes
 #################################################################################
 
 """
-    addnode!(graph::Graph{T}, node::T)::Graph{T} where T
+    function addnode!(graph::Graph{T}, node::T) where T
 
 Adds a node to the `Graph`.
 """
@@ -129,7 +129,7 @@ end
 #################################################################################
 
 """
-    addedge!(graph::Graph{T}, node1::T, node2::T)::Graph{T} where T
+    function addedge!(graph::Graph{T}, node1::T, node2::T) where T
 
 Adds an edge between `node1` and `node2`. If `node1` or `node2` are not present in
 the `Graph`, they are added.
@@ -151,7 +151,7 @@ end
 #################################################################################
 
 """
-    isneighbor(graph::Graph{T}, node1::T, node2::T)::Bool where T
+    function isneighbor(graph::Graph{T}, node1::T, node2::T)::Bool where T
 
 Checks whether `node1` and `node2` are connected by an edge.
 """
@@ -168,10 +168,9 @@ end
 #################################################################################
 
 """
-    bfs(graph::Graph{T},
-        source::T,
-        destination::Union{Nothing, T} = nothing
-        )::Tuple{Dict{T, Int}, Dict{T, T}} where T
+    function bfs(graph::Graph{T},
+                 source::T,
+                 destination::Union{Nothing, T} = nothing) where T
 
 Performs a full BFS starting from the node `source` (and optionally, to the `destination`).
 
@@ -219,12 +218,12 @@ end
 #################################################################################
 
 """
-    nodes_from_bfs(graph::Graph{T}, source::T;
-                   reverse::Bool = false)::Vector{T} where T
+    function nodes_from_bfs(graph::Graph{T}, source::T;
+                            reverse::Bool = false) where T
 
-    nodes_from_bfs(graph::Graph{T}, source::T,
-                   destinations::Union{Set{T}, Vector{T}};
-                   reverse::Bool = false)::Vector{T} where T
+    function nodes_from_bfs(graph::Graph{T}, source::T,
+                            destinations::Union{Set{T}, Vector{T}};
+                            reverse::Bool = false) where T
 
 Returns the `Vector` of nodes in the BFS path from the `source` (optionally, towards the
 `destinations`). If `reverse=true` returns the reverse order of nodes.
@@ -272,9 +271,9 @@ end
 #################################################################################
 
 """
-    shortest_path(graph::Graph{T}, source::T, destination::T)::Vector{T} where T
+    function shortest_path(graph::Graph{T}, source::T, destination::T) where T
 
-Finds the shortest path between `source` and `destination` in a `Graph`.
+Returns the shortest path between `source` and `destination` in a `Graph`.
 """
 function shortest_path(graph::Graph{T}, source::T, destination::T)::Vector{T} where T
     if source == destination
@@ -301,10 +300,10 @@ end
 #################################################################################
 
 """
-    nextnode_in_path(graph::Graph{T}, source::T, destination::T, n=1) where T
+    function nextnode_in_path(graph::Graph{T}, source::T, destination::T, n=1) where T
 
-Finds the next node in the shortest path between `source` and `destination` in a `Graph`.
-Optionally, finds `n`th node in the path.
+Returns the next node in the shortest path between `source` and `destination` in a `Graph`.
+Optionally, finds `n`th next-node in the path.
 """
 nextnode_in_path(graph::Graph{T}, source::T, destination::T, n=1) where T = 
     shortest_path(graph, source, destination)[n+1]
@@ -335,7 +334,7 @@ end
 #################################################################################
 
 """
-    has_cycle(graph::Graph{T}) where T
+    function has_cycle(graph::Graph{T}) where T
 
 Checks whether a `Graph` has cycles/loops in it.
 """
@@ -354,12 +353,12 @@ end
 #################################################################################
 
 """
-    find_sum_central_node(graph::Graph{T}) where T
-    find_sum_central_node(graph::Graph{T}, nodes::Set{T}) where T
-    find_sum_central_node(graph::Graph{T}, nodes::Vector{T}) where T
+    function find_sum_central_node(graph::Graph{T}) where T
+    function find_sum_central_node(graph::Graph{T}, nodes::Set{T}) where T
+    function find_sum_central_node(graph::Graph{T}, nodes::Vector{T}) where T
 
-Finds the center node of a `Graph`. Optionally, when `nodes::Vector{T}` is specified, finds
-the center node with respect to the `nodes`.
+Finds the sum central node node of a `Graph`. Optionally, when `nodes` is
+specified, finds the central node with respect to the `nodes`.
 """
 function find_sum_central_node(graph::Graph{T},
                                nodes::Union{Nothing, Set{T}} = nothing) where T
@@ -389,12 +388,12 @@ find_sum_central_node(graph::Graph{T}, nodes::Vector{T}) where T =
 #################################################################################
 
 """
-    find_eccentric_central_node(graph::Graph{T}) where T
-    find_eccentric_central_node(graph::Graph{T}, nodes::Set{T}) where T
-    find_eccentric_central_node(graph::Graph{T}, nodes::Vector{T}) where T
+    function find_eccentric_central_node(graph::Graph{T}) where T
+    function find_eccentric_central_node(graph::Graph{T}, nodes::Set{T}) where T
+    function find_eccentric_central_node(graph::Graph{T}, nodes::Vector{T}) where T
 
-Finds the center node of a `Graph`. Optionally, when `nodes::Vector{T}` is specified, finds
-the center node with respect to the `nodes`.
+Finds the eccentric central node of a `Graph`. Optionally, when `nodes` is specified, finds
+the central node with respect to the `nodes`.
 """
 function find_eccentric_central_node(graph::Graph{T},
                                      nodes::Union{Nothing, Set{T}} = nothing) where T

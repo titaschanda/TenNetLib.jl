@@ -12,8 +12,13 @@ settings = Dict(
         [
             "Introduction" => "index.md"
             "Base functionalities" => [
+                "Controlling global behaviors" => "base/global.md",
                 "Dealing with Fermions" => "base/fermions.md",
-                "OpStrings" => "base/opstrings.md"
+                "OpStrings" => "base/opstrings.md",
+                "CouplingModel" => "base/couplingmodel.md",
+                "Solvers" => "base/solver.md",
+                "The Graph object" => "base/graph.md",
+                "Miscellaneous typedefs and functions" => "base/misc.md"
                 ]
             "MPS based methods" => [
                 "StateEnvs" => "mps/state_envs.md",
@@ -21,8 +26,13 @@ settings = Dict(
                 "Sweeping through the MPS" => "mps/sweep.md",
                 "Performing DMRG" => "mps/dmrg.md",
                 "Example: DMRG" => "mps/example_dmrg.md",
-                "Performing TDVP" => "mps/tdvp.md"
-                ]
+                "Performing TDVP" => "mps/tdvp.md",
+                "Example: TDVP" => "mps/example_tdvp.md",
+                "Measuring the MPS" => "mps/measure.md"
+            ]
+            "TTN based methods" => [
+                "Tree Tensor Networks" => "ttn/ttn.md"
+            ]
         ],
     :format => Documenter.HTML(; assets=["assets/favicon.ico"], prettyurls=false),
     :doctest => true,

@@ -2,7 +2,7 @@
 #################################################################################
 
 """
-    shanon_entropy(p::Vector{Float64})::Float64
+    function shanon_entropy(p::Vector{Float64})
 
 Compute Shannon Entropy of a given vector `p`.
 """
@@ -27,7 +27,7 @@ end
 #################################################################################
 
 """
-    entropy(psi::MPS, bond::Int)::Float64
+    function entropy(psi::MPS, bond::Int)
 
 Compute von Neumann Entropy of a given MPS `psi` at `bond`.
 """
@@ -56,7 +56,7 @@ end
 #################################################################################
 
 """
-    entropy(psi::MPS; kwargs...)::Vector{Float64}
+    function entropy(psi::MPS; kwargs...)
 
 Compute von Neumann Entropies of a given MPS `psi` at all the bonds.
 
@@ -72,10 +72,13 @@ end
 #################################################################################
 
 """
-    expectC(psi::MPS, opten::ITensor)::ComplexF64
+    function expectC(psi::MPS, opten::ITensor)
+    function expectR(psi::MPS, opten::ITensor)
 
-Returns (complex) local expectation value (`::ComplexF64`) of a given MPS `psi::MPS`.
-The operator `opten::ITensor` must be single-site operator.
+Returns (complex / real) local expectation value (`::ComplexF64` / `::Float64`)
+of a given MPS `psi::MPS`. The operator `opten::ITensor` must be single-site operator.
+
+For `expectR`, if the expectation value is complex, raises a warning!
 """
 function expectC(psi::MPS, opten::ITensor)::ComplexF64
     pos = findsite(psi, opten)
@@ -96,16 +99,6 @@ function expectC(psi::MPS, opten::ITensor)::ComplexF64
     return complex(val)
 end
 
-#################################################################################
-
-"""
-    expectR(psi::MPS, opten::ITensor)::Float64
-
-Returns (real) local expectation value (`::Float64`) of a given MPS `psi::MPS`.
-The operator `opten::ITensor` must be single-site operator.
-
-If the expectation value is complex, raises a warning!
-"""
 function expectR(psi::MPS, opten::ITensor)::Float64
     val = expectC(psi, opten)
     if abs(imag(val)) > 100 * Float64_threshold()
@@ -117,35 +110,30 @@ end
 #################################################################################
 
 """
-    expectC(psi::MPS, opstr::String, pos::Int)
+    function expectC(psi::MPS, opstr::String, pos::Int)
+    function expectR(psi::MPS, opstr::String, pos::Int)
 
-Returns (complex) local expectation value (`::ComplexF64`) of a given MPS `psi::MPS` for
-a given operator name (`opstr::String`) and a site number (`pos::Int`) 
+Returns (complex / real) local expectation value (`::ComplexF64` / `::Float64`) of a
+given MPS `psi::MPS` for a given operator name (`opstr::String`) and a site index (`pos::Int`) 
+
+For `expectR`, if the expectation value is complex, raises a warning!
 """
 expectC(psi::MPS, opstr::String, pos::Int) = expectC(psi, op(opstr, siteind(psi, pos)))
-
-#################################################################################
-
-"""
-    expectR(psi::MPS, opstr::String, pos::Int)
-
-Returns (real) local expectation value (`::Float64`) of a given MPS `psi::MPS` for
-a given operator name (`opstr::String`) and a site number (`pos::Int`).
-
-If the expectation value is complex, raises a warning!
-"""
 expectR(psi::MPS, opstr::String, pos::Int) = expectR(psi, op(opstr, siteind(psi, pos)))
 
 #################################################################################
 
 """
-    expectC(psi::MPS, opstr::String; kwargs...)
+    function expectC(psi::MPS, opstr::String; kwargs...)
+    function expectR(psi::MPS, opstr::String; kwargs...)
 
-Returns (complex) local expectation values (`::Vector{ComplexF64}`) of a given MPS `psi::MPS`
-for a given operator name (`opstr::String`) at all the sites.
+Returns (complex / real) local expectation values (`::Vector{ComplexF64}` / `::Vector{Float64}`)
+of a given MPS `psi::MPS` for a given operator name (`opstr::String`) at all the sites.
 
 Optionally, for specific sites, keyword argument `sites` can be specified, e.g.,
 `sites = [1, 2, 3]`.
+
+For `expectR`, if the expectation value is complex, raises a warning!
 """
 function expectC(psi::MPS, opstr::String; kwargs...)
     N = length(psi)
@@ -153,19 +141,6 @@ function expectC(psi::MPS, opstr::String; kwargs...)
     return map(pos -> expectC(psi, opstr, pos), sites)
 end
 
-#################################################################################
-
-"""
-    expectR(psi::MPS, opstr::String; kwargs...)
-
-Returns (real) local expectation values (`::Vector{Float64}`) of a given MPS `psi::MPS`
-for a given operator name (`opstr::String`) at all the sites.
-
-Optionally, for specific sites, keyword argument `sites` can be specified, e.g.,
-`sites = [1, 2, 3]`.
-
-If the expectation value is complex, raises a warning!
-"""
 function expectR(psi::MPS, opstr::String; kwargs...)
     N = length(psi)
     sites = get(kwargs, :sites, 1:N)
@@ -175,10 +150,14 @@ end
 #################################################################################
 
 """
-    expectC(psi::MPS, optens::Vector{ITensor})::ComplexF64
+    function expectC(psi::MPS, optens::Vector{ITensor})
+    function expectR(psi::MPS, optens::Vector{ITensor})
 
-Returns (complex) multi-site expectation value (`::ComplexF64`) of a given MPS `psi::MPS`
-for a given vector of single-site operators (`optens::Vector{ITensor}`).
+Returns (complex / real) multi-site expectation value (`::ComplexF64` / `::Float64`)
+of a given MPS `psi::MPS` for a given vector of single-site operators
+(`optens::Vector{ITensor}`).
+
+For `expectR`, if the expectation value is complex, raises a warning!
 """
 function expectC(psi::MPS, optens::Vector{ITensor})::ComplexF64
 
@@ -246,16 +225,6 @@ function expectC(psi::MPS, optens::Vector{ITensor})::ComplexF64
     return complex(scalar(C))
 end
 
-#################################################################################
-
-"""
-    expectR(psi::MPS, optens::Vector{ITensor})::Float64
-
-Returns (real) multi-site expectation value (`::Float64`) of a given MPS `psi::MPS`
-for a given vector of single-site operators (`optens::Vector{ITensor}`).
-
-If the expectation value is complex, raises a warning!
-"""
 function expectR(psi::MPS, optens::Vector{ITensor})::Float64
     val = expectC(psi, optens)
     if abs(imag(val)) > 100 * Float64_threshold()
@@ -267,16 +236,22 @@ end
 #################################################################################
 
 """
-    expectC(psi::MPS, oppairs::Vector{Pair{String, Int}};
-            isfermions::Bool = true)::ComplexF64
+    function expectC(psi::MPS, oppairs::Vector{Pair{String, Int}};
+                     isfermions::Bool = true)
+    function expectR(psi::MPS, oppairs::Vector{Pair{String, Int}};
+                     isfermions::Bool = true)
 
-Returns (complex) multi-site expectation value (`::ComplexF64`) of a given MPS `psi::MPS`.
-`oppairs::Vector{Pair{String, Int}}` contains pairs of operator names (`String`) and
-site locations (`Int`). 
-
-E.g., for <ψ|OᵢOⱼOₖ... |ψ>, `oppairs = ["O" => i, "O" => j, "O" => k,...]`.
+Returns (complex / real) multi-site expectation value (`::ComplexF64` / `::Float64`) of
+a given MPS `psi::MPS`. `oppairs::Vector{Pair{String, Int}}` contains pairs of operator
+names (`String`) and site locations (`Int`). E.g., for <ψ|OᵢOⱼOₖ... |ψ>, `oppairs = ["O" => i, "O" => j, "O" => k,...]`.
 
 Fermionic JW strings are added automatically for fermionic operators if `isfermions::Bool = true` (default).
+
+For `expectR`, if the expectation value is complex, raises a warning!
+
+#### Example:
+    valueC = expectC(psi, ["Cdag" => 2, "C" => 6, "Cdag" => 9, "C" => 12])
+    valueR = expectR(psi, ["Cdag" => 2, "C" => 6, "Cdag" => 9, "C" => 12])
 """
 function expectC(psi::MPS, oppairs::Vector{Pair{String, Int}};
                  isfermions::Bool = true)::ComplexF64
@@ -290,22 +265,6 @@ function expectC(psi::MPS, oppairs::Vector{Pair{String, Int}};
     return isfermions ? perm * expectC(psi, optens) : expectC(psi, optens) 
 end
 
-#################################################################################
-
-"""
-    expectR(psi::MPS, oppairs::Vector{Pair{String, Int}};
-            isfermions::Bool = true)::Float64
-
-Returns (real) multi-site expectation value (`::Float64`) of a given MPS `psi::MPS`.
-`oppairs::Vector{Pair{String, Int}}` contains pairs of operator names (`String`) and
-site locations (`Int`). 
-
-E.g., for <ψ|OᵢOⱼOₖ... |ψ>, `oppairs = ["O" => i, "O" => j, "O" => k,...]`.
-
-Fermionic JW strings are added automatically for fermionic operators if `isfermions::Bool = true` (default).
-
-If the expectation value is complex, raises a warning!
-"""
 function expectR(psi::MPS, oppairs::Vector{Pair{String, Int}};
                  isfermions::Bool = true)::Float64
     val = expectC(psi, oppairs; isfermions)

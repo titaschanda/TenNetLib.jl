@@ -1,13 +1,13 @@
 
 #################################################################################
 """
-    eig_solver(env, phi0::ITensor, time_step::Nothing; kwargs...)
+    function eig_solver(env, phi0::ITensor, time_step::Nothing; kwargs...)
 
 Solver to find smallest eigenvalue corresponding to "matrix" `env` and
 input vector `phi0`.
 
 #### Named arguments for `solver` and their default values:
-See documentation of KrylovKit.jl.
+See the documentation of KrylovKit.jl.
  - `ishermitian::Bool = true`
  - `solver_tol::Float64 = 1E-14`.
  - `solver_krylovdim::Int = 5`.
@@ -46,12 +46,12 @@ end
 #################################################################################
 
 """
-    exp_solver(env, phi0::ITensor, time_step::Union{Float64, ComplexF64}; kwargs...)
+    function exp_solver(env, phi0::ITensor, time_step::Union{Float64, ComplexF64}; kwargs...)
 
 Exponentiation solver to find `exp(env * phi0 * time_step)`.
 
 #### Named arguments for `solver` and their default values:
-See documentation of KrylovKit.jl.
+See the documentation of KrylovKit.jl.
  - `ishermitian::Bool = true`
  - `solver_tol::Float64 = 1E-12`.
  - `solver_krylovdim::Int = 30`.

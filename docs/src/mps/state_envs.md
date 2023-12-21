@@ -1,6 +1,6 @@
 # `StateEnvs`: A container to store the MPS and its environments
 
-At the lowest-level of abstraction, TeNLib defines `StateEnvs` to hold an MPS and its
+At the lowest-level of abstraction, TeNLib.jl defines `StateEnvs` to hold an MPS and its
 environments to be modified in place.
 
 Skip this part if you want to avoid lower-level abstraction.

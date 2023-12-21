@@ -2,7 +2,7 @@
 
 ## `TDVPEngine`
 
-TeNLib defines a struct, called `TDVPEngine`, to store essential data during TDVP sweeps.
+TeNLib.jl defines a struct, called `TDVPEngine`, to store essential data during TDVP sweeps.
 
 ```@docs
 TDVPEngine
@@ -24,6 +24,8 @@ Base.copy(engine::TDVPEngine)
 ```
 
 ## `tdvpsweep!`
+
+Following function performs one TDVP sweep.
 
 ```@docs
 tdvpsweep!

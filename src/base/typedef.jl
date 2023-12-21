@@ -29,7 +29,7 @@ const IDTensors = Dict{IDType, ITensor}
 ################################################################################
 
 """
-    Base.eltype(idt::IDTensors)
+    function Base.eltype(idt::IDTensors)
 
 Returns the element type (e.g., `Float64` or `ComplexF64`) of the `IDTensors`.
 """
