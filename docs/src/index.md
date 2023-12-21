@@ -12,9 +12,10 @@ The documentation for TeNLib.jl can be found [**here**](https://titaschanda.gith
 
 ## Overview
 
-TeNLib.jl features popular Tensor Network (TN) codes with **multi-layered abstraction**,
-that provides varying levels of control to the user. Currently, TeNLib contains codes for
-* *(a)* **Finite-size Matrix-Product States (MPS)**: Different variants of DMRG and TDVP (including subspace expansion).
+TeNLib.jl features widely-used Tensor Network (TN) codes, designed with a **multi-layered abstraction**
+to cater to diverse user needs. The library provides users with varying levels of control over their computations.
+Presently, TeNLib.jl boasts an array of functionalities for:
+* *(a)* **Finite-size Matrix-Product States (MPS)**: Different variants of Density Matrix Renormalization Group (DMRG) and Time Dependent Variational Principle (TDVP) (including subspace expansion) methods.
 * *(b)* **Tree Tensor Network (TTN)**: Variational search for the ground state and first few excited states.
 
 
@@ -35,9 +36,9 @@ pkg> add https://github.com/titaschanda/TeNLib.jl
 ## Future functionality?
 
 Here is a list for future additions in the decreasing order of priority. Any help / suggestion is welcome.
-* Augmented Tree Tensor Network (aTTN) for variational ground state search for 2D problems.
-* Infinite DMRG (iDMRG) and/or Variational Uniform Matrix Product States (VUMPS) to tackle 1D / quasi-1D problems directly at the thermodynamic limit.
-* Projected Entangled Pair States (PEPS) for 2D problems.
+* **Augmented Tree Tensor Network (aTTN)** for variational ground state search for 2D problems.
+* **Infinite DMRG (iDMRG)** and/or **Variational Uniform Matrix Product States (VUMPS)** to tackle 1D / quasi-1D problems directly at the thermodynamic limit.
+* **Projected Entangled Pair States (PEPS)** for 2D problems.
 * Real-time evolution method using PEPS and TTN.
 
 ## Example: A simple DMRG code

@@ -55,13 +55,27 @@ psi = getpsi(sysenv)
 
 # Alternatively, take the psi from `StateEnvs` itself.
 # NOTE: This can crash the simulation, if the MPS is modified (e.g., in measurements)
-# and `StateEnvs` is going to be updated later.
+# and `StateEnvs` is going to be updated later on.
 # psi = sysenv.psi
 ```
-Using such lower-level function, one can restart the simulation at later times
+Most often, it is better to do a single-site DMRG (without any noise) after standard two-site update for better
+convergence. Such lowe-level function using `StateEnvs` is useful for that.
+```
+sysenv = StateEnvs(psi0, H)
+
+params2 = DMRGParams(;nsweeps = [10, 10], maxdim = [20, 50],
+                     cutoff = 1e-14, noise = 1e-3, noisedecay = 2,
+                     disable_noise_after = 5)
+dmrg!(sysenv, params2, 2)
+
+params1 = DMRGParams(;nsweeps = [10], maxdim = [50], cutoff = 0.0)
+dmrg!(sysenv, params1, 1)
+```
+
+Using such lower-level function, one can also restart the simulation at later times
 (e.g., by saving the `StateEnvs` using `Serialization.jl`), or one can perform
 [`updateH!`](@ref updateH!(sysenv::StateEnvs{ProjMPO}, H::MPO; recalcEnv::Bool = true)) to slowly
-change the Hamiltonian during DMRG simulations.
+change the Hamiltonian during DMRG simulations. Most often it is better to perform a 
 
 
 Global Subspace Expansion can also be used to get rid of nasty local minimas (if needed), if the `StateEnvs` is

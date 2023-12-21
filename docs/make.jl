@@ -34,7 +34,7 @@ settings = Dict(
                 "Tree Tensor Networks" => "ttn/ttn.md"
             ]
         ],
-    :format => Documenter.HTML(; assets=["assets/favicon.ico"], prettyurls=false),
+    :format => Documenter.HTML(;),
     :doctest => true,
     :checkdocs => :none,
 )
@@ -42,7 +42,9 @@ settings = Dict(
                 
 ############################################################################
 
-makedocs(; sitename=sitename, settings...)
+makedocs(;sitename=sitename,
+         authors = "Titas Chanda",
+         settings...)
 
 ############################################################################
 
