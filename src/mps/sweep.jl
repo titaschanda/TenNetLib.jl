@@ -428,7 +428,7 @@ function krylov_extend!(sysenv::StateEnvs{ProjMPO}; kwargs...)::Nothing
     extension_applyH_cutoff::Float64 = get(kwargs, :extension_applyH_cutoff,
                                            Float64_threshold())
     extension_applyH_maxdim::Int = get(kwargs, :extension_applyH_maxdim,
-                                       maxlinkdim(psi) + 1)
+                                       maxlinkdim(sysenv.psi) + 1)
     extension_cutoff::Float64 = get(kwargs, :extension_cutoff,
                                     1E-10)
     
