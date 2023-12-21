@@ -36,7 +36,8 @@ settings = Dict(
         ],
     :format => Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
-        description = "A Tensor Network Library (TeNLib.jl) built on top of ITensors.jl for quantum many-body problems."),
+        description = "A Tensor Network Library (TeNLib.jl) built on top of ITensors.jl for quantum many-body problems.",
+        assets=["assets/favicon.ico"]),    
     :doctest => true,
     :checkdocs => :none,
 )
