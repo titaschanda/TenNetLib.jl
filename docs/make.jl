@@ -34,7 +34,8 @@ settings = Dict(
                 "Tree Tensor Networks" => "ttn/ttn.md"
             ]
         ],
-    :format => Documenter.HTML(;),
+    :format => Documenter.HTML(
+        prettyurls = get(ENV, "CI", nothing) == "true"),
     :doctest => true,
     :checkdocs => :none,
 )
