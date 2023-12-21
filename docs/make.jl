@@ -11,6 +11,10 @@ settings = Dict(
     :pages =>
         [
             "Introduction" => "index.md"
+            "Base functionalities" => [
+                "Dealing with Fermions" => "base/fermions.md",
+                "OpStrings" => "base/opstrings.md"
+                ]
             "MPS based methods" => [
                 "StateEnvs" => "mps/state_envs.md",
                 "Perform local updates" => "mps/update_site.md",

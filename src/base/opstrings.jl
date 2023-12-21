@@ -20,7 +20,7 @@ end
 #################################################################################
 
 """
-    Base.copy(opstr::OpString)
+    function Base.copy(opstr::OpString)
 
 Shallow copy of `OpString`.
 """
@@ -29,7 +29,7 @@ Base.copy(opstr::OpString) = OpString(Base.copy(opstr.coeff), Base.copy(opstr.op
 #################################################################################
 
 """
-    coefficient(opstr::OpString)::Number
+    function coefficient(opstr::OpString)
 
 Returns the coefficient of the `OpString`.
 """
@@ -39,7 +39,7 @@ coefficient(opstr::OpString)::Number =
 #################################################################################
 
 """
-    operators(opstr::OpString)
+    function operators(opstr::OpString)
 
 Returns the operator string of the `OpString`.
 """
@@ -48,7 +48,7 @@ operators(opstr::OpString) = opstr.ops
 #################################################################################
 
 """
-    minsite(opstr::OpString)
+    function minsite(opstr::OpString)
 
 Returns the lowest site position in the operator string of the `OpString`.
 """
@@ -57,7 +57,7 @@ minsite(opstr::OpString) = minimum(x -> x.second, operators(opstr))
 #################################################################################
 
 """
-    maxsite(opstr::OpString)
+    function maxsite(opstr::OpString)
 
 Returns the highest site position in the operator string of the `OpString`.
 """
@@ -66,7 +66,7 @@ maxsite(opstr::OpString) = maximum(x -> x.second, operators(opstr))
 #################################################################################
 
 """
-    Base.length(opstr::OpString)
+    function Base.length(opstr::OpString)
 
 Returns the length of the operator string in the `OpString`.
 """
@@ -75,8 +75,8 @@ Base.length(opstr::OpString) = Base.length(opstr.ops)
 #################################################################################
 
 """
-    isless(opstr1::OpString{T1},
-           opstr2::OpString{T2}) where {T1 <: Number, T2 <: Number}
+    function isless(opstr1::OpString{T1},
+                    opstr2::OpString{T2}) where {T1 <: Number, T2 <: Number}
 
 Comparisions between two `OpStrings` required for sorting.
 """
@@ -95,7 +95,7 @@ end
 #################################################################################
 
 """
-    removeIds(opstr::OpString{T})::OpString{T} where {T <: Number}
+    function removeIds(opstr::OpString{T}) where {T <: Number}
 
 Returns an `OpString` with all "Id" operators removed from the original.
 """
@@ -115,12 +115,11 @@ end
 #################################################################################
 
 """
-    bosonize(opstr::OpString{T1},
-             sites::Vector{Index{T2}}
-             )::OpString{T1} where {T1 <: Number, T2}
+    function bosonize(opstr::OpString{T1},
+                      sites::Vector{Index{T2}}) where {T1 <: Number, T2}
 
 Returns an `OpString` after "bosonizing" the original with Jordan-Wigner strings
-as needed.
+as needed. See [`bosonize`](@ref).
 """
 function bosonize(opstr::OpString{T1},
                   sites::Vector{Index{T2}}
@@ -138,10 +137,18 @@ end
 
 Collection of `OpString`s.
 
-#### Usage example:
-    os = OpString()
+#### Syntax:
+    os = OpStrings()
     os += 1, "Sx" => i, "Sx" => j, "Sx" => k, ....
     os += "Sx" => i, "Sx" => j, "Sx" => k, ....
+
+#### Example:
+    os = OpStrings()    
+    for j=1:N-1
+        os += 1, "Sz" => j, "Sz" => j+1
+        os += 0.5, "S+" => j, "S-" => j+1
+        os += 0.5, "S-" => j, "S+" => j+1
+    end
 """
 const OpStrings{T} = Vector{OpString{T}}
 
@@ -180,7 +187,7 @@ Base.:+(os::OpStrings{T},
 #################################################################################
 
 """
-    removeIdsZeros(os::OpStrings{T})::OpStrings{T} where {T <: Number}
+    function removeIdsZeros(os::OpStrings{T}) where {T <: Number}
 
 Returns an `OpStrings` with all "Id" operators removed from the original,
 as well as any `OpString` term that has `coeff` less than `Float64_threshold()`.
@@ -193,12 +200,10 @@ end
 #################################################################################
 
 """
-    bosonize(os::OpStrings{T1},
-             sites::Vector{Index{T2}}
-             )::OpStrings{T1} where {T1 <: Number, T2}
+    function bosonize(os::OpStrings{T1}, sites::Vector{Index{T2}}) where {T1 <: Number, T2}
 
 Returns an `OpStrings` after "bosonizing" the original with Jordan-Wigner strings
-as needed.
+as needed. See [`bosonize`](@ref).
 """
 function bosonize(os::OpStrings{T1},
                   sites::Vector{Index{T2}}
@@ -209,7 +214,7 @@ end
 #################################################################################
 
 """
-    mergeterms(os::OpStrings{T})::OpStrings{T} where T <: Number
+    function mergeterms(os::OpStrings{T}) where T <: Number
 
 Returns an `OpStrings` where `OpString` elements with exactly same operator
 strings has been merged by adding the coefficients.  

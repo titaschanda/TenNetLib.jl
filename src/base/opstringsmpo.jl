@@ -83,24 +83,24 @@ end
 #################################################################################
 
 """
-    ITensors.MPO(os::OpStrings{T1},
-                 sites::Vector{Index{T2}};
-                 maxdim::Int = typemax(Int),
-                 mindim::Int = 1,
-                 cutoff::Float64 = Float64_threashold(),
-                 svd_alg::String = "divide_and_conquer",
-                 chunksize::Int = 12
-                 )::MPO where {T1 <: Number, T2}
+    function ITensors.MPO(os::OpStrings{T1},
+                          sites::Vector{Index{T2}};
+                          maxdim::Int = typemax(Int),
+                          mindim::Int = 1,
+                          cutoff::Float64 = Float64_threashold(),
+                          svd_alg::String = "divide_and_conquer",
+                          chunksize::Int = 12) where {T1 <: Number, T2}
 
 Creates `MPO` from `os::OpStrings`.
-SUPER INEFFICIENT.
+The present version uses recursive SVDs to create the MPO. Very inefficient when number of
+Hamiltonian terms is large. Future updates will solve the problem.
 
 #### Named arguments and their default values:
- - `maxdim::Int = typemax(Int)`.
- - `mindim::Int = 1`.
- - `cutoff::Float64 = Float64_threashold()`.
+ - `maxdim::Int = typemax(Int)`: Maximum MPO bond dimension after SVD truncation.
+ - `mindim::Int = 1`: Minimum MPO bond dimension after SVD truncation.
+ - `cutoff::Float64 = Float64_threshold()`: Cutoff for SVD truncation.
  - `svd_alg::String = "divide_and_conquer"`.
- - `chunksize::Int = 12`.
+ - `chunksize::Int = 12`. Maximum size of the chunks on which recursive SVDs are performed.
 """
 function ITensors.MPO(os::OpStrings{T1},
                       sites::Vector{Index{T2}};
