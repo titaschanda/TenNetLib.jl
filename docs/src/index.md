@@ -14,7 +14,7 @@ The documentation for TeNLib.jl can be found [**here**](https://titaschanda.gith
 
 TeNLib.jl features widely-used Tensor Network (TN) codes, designed with a **multi-layered abstraction**
 to cater to diverse user needs. The library provides users with varying levels of control over their computations.
-Presently, TeNLib.jl boasts an array of functionalities for:
+Presently, TeNLib.jl presents an array of functionalities for:
 * *(a)* **Finite-size Matrix-Product States (MPS)**: Different variants of Density Matrix Renormalization Group (DMRG) and Time Dependent Variational Principle (TDVP) (including subspace expansion) methods.
 * *(b)* **Tree Tensor Network (TTN)**: Variational search for the ground state and first few excited states.
 
