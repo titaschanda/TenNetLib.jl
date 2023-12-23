@@ -153,7 +153,7 @@ end
 """
     function StateEnvs(psi::MPS, H::CouplingModel, Ms::Vector{MPS}; weight::Float64)
 
-Constructor of StateEnvs from a `CouplingModel` and and a vector of `MPS` used
+Constructor of StateEnvs from a `CouplingModel` and a vector of MPS used
 for excited state DMRG. Each terms in the `CouplingModel` are contracted in parallel.
 """
 function StateEnvs(psi::MPS, H::CouplingModel, Ms::Vector{MPS}; weight::Float64)
@@ -368,6 +368,16 @@ end
 
 #################################################################################
 
+"""
+    function product(sysenv::StateEnvs, v::ITensor)
+
+Returns the `Matrix-Vector` product between the environment and input ITensor `v`.
+"""
+product(sysenv::StateEnvs, v::ITensor)::ITensor = product(sysenv.PH, v)
+
+(sysenv::StateEnvs)(v::ITensor) = product(sysenv, v)
+
+#################################################################################
 
 """
     function Base.copy(sysenv::StateEnvs)

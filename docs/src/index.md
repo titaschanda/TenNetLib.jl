@@ -146,5 +146,6 @@ let
     en, psi = optimize(psi0, H, params, sweeppath)
 end
 ```
-**Note:** `OpStrings` and `CouplingModel` can be also used for MPS based codes without modifying other parts of the code.
+!!! info
+    "`OpStrings` and `CouplingModel` can be also used for MPS based codes without modifying other parts of the code."
     

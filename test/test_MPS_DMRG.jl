@@ -128,7 +128,10 @@ let
 
     for nsite in [1, 2]
         @time en, psi_gr = dmrg_2(sites, H, psi0;
-                            nsite = nsite)
+                                  nsite = nsite)
+
+        @show measure(psi_gr, "Sz")
+        @show measure(psi_gr, ["Sz" => 1, "Sz" => 10])
         
         @time en1, psi1 = dmrg_ex_2(sites, H, psi0, psi_gr;
                                     nsite = nsite)

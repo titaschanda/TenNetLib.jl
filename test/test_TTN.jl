@@ -15,7 +15,7 @@ function coupling_model(;qn = true)
     end
     
     H = CouplingModel(os,sites)
-    psi0 = TTN(sites, 12, QN("Sz", 0))
+    psi0 = default_randomTTN(sites, 12, QN("Sz", 0))
     
     return sites, H, psi0
 end

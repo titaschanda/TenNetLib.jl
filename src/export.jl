@@ -134,6 +134,7 @@ export
     set_nsite!,
     position!,
     updateH!,
+    product,
 
     # base/update_site.jl
     halfsweep_done,
@@ -171,8 +172,7 @@ export
     # mps/measure.jl
     shannon_entropy,
     entropy,
-    expectC,
-    expectR,
+    measure,
 
 
     # ttn/typedef.jl
@@ -201,11 +201,12 @@ export
     
     # ttn/ttn_generators.jl
     _distribute_site_positions,
-    _default_graph_from_numsites,
+    default_graph_sitenodes,
     _ttn_ind_reducedim!,
     _ttn_ind_cleanup_one!,
     _ttn_ind_cleanup!,
-    TTN,
+    randomTTN,
+    default_randomTTN,
 
     # ttn/linktensors.jl
     LinkTensorsTTN,
@@ -236,6 +237,7 @@ export
     # ttn/state_envs_ttn.jl
     StateEnvsTTN,
     getpsi,
+    getenv,
     position!,
     product,
     

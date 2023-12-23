@@ -18,14 +18,26 @@ end
 
 #################################################################################
 
-## TO ADD MORE
+"""
+    function StateEnvsTTN(psi::TTN, H::CouplingModel)
 
+Constructor of the `StateEnvsTTN` from a `CouplingModel`. Each terms in the `CouplingModel`
+are contracted in parallel.
+"""
 function StateEnvsTTN(psi::TTN, M::CouplingModel)
     psi = copy(psi)
     env = EnvCouplingModelTTN(psi, M)
     return StateEnvsTTN(psi, env)
 end
 
+#################################################################################
+
+"""
+    function StateEnvsTTN(psi::TTN, H::CouplingModel, Ms::Vector{TTN}; weight::Float64)
+
+Constructor of StateEnvsTTN from a `CouplingModel` and a vector of TTN used
+for excited state search. Each terms in the `CouplingModel` are contracted in parallel.
+"""
 function StateEnvsTTN(psi::TTN,
                       M::CouplingModel,
                       psis::Vector{TTN};
@@ -59,21 +71,58 @@ StateEnvsTTN(psi::TTN, M::CouplingModel, psis::TTN...; weight::Float64) =
 
 #################################################################################
 
+"""
+    function Base.copy(sysenv::StateEnvsTTN)
+
+Shallow copy of `StateEnvsTTN`.
+"""
 Base.copy(sysenv::StateEnvsTTN) =
     StateEnvsTTN(Base.copy(sysenv.psi), Base.copy(sysenv.env))
 
 #################################################################################
 
+"""
+    function getpsi(sysenv::StateEnvsTTN)
+
+Returns (shallow copy of) the state `psi`.
+"""
 getpsi(sysenv::StateEnvsTTN) = Base.copy(sysenv.psi)
 
 #################################################################################
 
+"""
+    function getenv(sysenv::StateEnvsTTN)
+
+Returns (shallow copy of) the environment `env`.
+"""
+getenv(sysenv::StateEnvsTTN) = base.copy(sysenv.env)
+
+#################################################################################
+
+"""
+    function position!(sysenv::StateEnvsTTN, node::Int2;
+                       maxdim::Int = typemax(Int),
+                       mindim::Int = 1,
+                       cutoff::Float64 = _Float64_Threshold,
+                       svd_alg::String = "divide_and_conquer",
+                       normalize::Bool = true)
+
+Moves the orthogonality center of the TTN to `node` and updates the effective Hamiltonian of
+the same.
+
+#### Named arguments and their default values:
+ - `normalize::Bool = true`: Whether to normalize afterwards.
+ - `maxdim::Int = typemax(Int)`: Maximum bond dimension after SVD truncation.
+ - `mindim::Int = 1`: Minimum bond dimension after SVD truncation.
+ - `cutoff::Float64 = Float64_threshold()`: Cutoff for SVD truncation.
+ - `svd_alg::String = "divide_and_conquer"`.
+"""
 function position!(sysenv::StateEnvsTTN, node::Int2;
                    maxdim::Int = typemax(Int),
                    mindim::Int = 1,
-                   cutoff::Float64 = _Float64_Threshold,
+                   cutoff::Float64 = Float64_threshold(),
                    svd_alg::String = "divide_and_conquer",
-                   normalize::Bool = false,
+                   normalize::Bool = true,
                    node_to_skip::Union{Int2, Nothing} = nothing
                    )::Nothing
     oc = orthocenter(sysenv.psi)
@@ -96,9 +145,12 @@ Base.eltype(sysenv::StateEnvsTTN) = Base.eltype(sysenv.env, sysenv.psi)
 
 #################################################################################
 
+"""
+    function product(sysenv::StateEnvsTTN, v::ITensor)
+
+Returns the `Matrix-Vector` product between the environment and input ITensor `v`.
+"""
 product(sysenv::StateEnvsTTN, v::ITensor) = product(sysenv.env, sysenv.psi, v)
-   
-#################################################################################
 
 (sysenv::StateEnvsTTN)(v::ITensor) = product(sysenv, v)
 

@@ -31,7 +31,10 @@ settings = Dict(
                 "Measuring the MPS" => "mps/measure.md"
             ]
             "TTN based methods" => [
-                "Tree Tensor Networks" => "ttn/ttn.md"
+                "Tree Tensor Networks" => "ttn/ttn.md",
+                "The TTN object" => "ttn/ttn_struct.md",
+                "Generating TTN" => "ttn/ttn_gen.md",
+                "StateEnvsTTN" => "ttn/state_envs_ttn.md"
             ]
         ],
     :format => Documenter.HTML(

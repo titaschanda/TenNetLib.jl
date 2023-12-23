@@ -23,6 +23,7 @@ updateH!(sysenv::StateEnvs{ProjCouplingModel_MPS}, H::CouplingModel, Ms::Vector{
 nsite(sysenv::StateEnvs)
 set_nsite!(sysenv::StateEnvs, nsite::Int)
 position!(sysenv::StateEnvs, pos::Int)
+TeNLib.product(sysenv::StateEnvs, v::ITensor)
 Base.copy(sysenv::StateEnvs)
 Base.length(sysenv::StateEnvs)
 ```

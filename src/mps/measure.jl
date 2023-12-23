@@ -72,21 +72,22 @@ end
 #################################################################################
 
 """
-    function expectC(psi::MPS, opten::ITensor)
-    function expectR(psi::MPS, opten::ITensor)
+    function measure(::Type{ElT} = ComplexF64, psi::MPS, opten::ITensor)
 
 Returns (complex / real) local expectation value (`::ComplexF64` / `::Float64`)
 of a given MPS `psi::MPS`. The operator `opten::ITensor` must be single-site operator.
 
-For `expectR`, if the expectation value is complex, raises a warning!
+For `ElT = Float64`, if the expectation value is complex, raises a warning!
 """
-function expectC(psi::MPS, opten::ITensor)::ComplexF64
+function measure(::Type{T}, psi::MPS,
+                 opten::ITensor)::T where T <: Union{ComplexF64, Float64}
+
     pos = findsite(psi, opten)
     pass = hasind(opten, siteind(psi, pos)) &&
         hasind(opten, siteind(psi, pos)') &&
         ndims(opten) == 2
     if !pass
-        error("`expectC()`: Error in operator tensors !!")
+        error("`measure`: Error in operator tensors !!")
     end
     removeqn = !hasqns(opten) && hasqns(psi) ? true : false
     
@@ -95,37 +96,41 @@ function expectC(psi::MPS, opten::ITensor)::ComplexF64
     orthogonalize!(psi, pos)
     ket = conditional_removeqns(psi[pos])
     bra = dag(prime(ket; tags = "Site"))
-    val = scalar(bra * opten * ket)
-    return complex(val)
+    val = complex(scalar(bra * opten * ket))
+    
+    if T <: Complex
+        return val
+    else
+        if abs(imag(val)) > 100 * Float64_threshold()
+            @warn "`measure(::Float64)`: Got complex number with |imaginary part| > $(100 * Float64_threshold()) !!"
+        end
+        return real(val)
+    end
 end
 
-function expectR(psi::MPS, opten::ITensor)::Float64
-    val = expectC(psi, opten)
-    if abs(imag(val)) > 100 * Float64_threshold()
-        @warn "`expectR()`: Got complex number with |imaginary part| > $(100 * Float64_threshold()), use `expectC instead !!"
-    end
-    return real(val)
-end
+measure(psi::MPS, opten::ITensor) = measure(ComplexF64, psi, opten)
 
 #################################################################################
 
 """
-    function expectC(psi::MPS, opstr::String, pos::Int)
-    function expectR(psi::MPS, opstr::String, pos::Int)
+    function measure(::Type{ElT} = ComplexF64, psi::MPS, opstr::String, pos::Int)
 
 Returns (complex / real) local expectation value (`::ComplexF64` / `::Float64`) of a
 given MPS `psi::MPS` for a given operator name (`opstr::String`) and a site index (`pos::Int`) 
 
-For `expectR`, if the expectation value is complex, raises a warning!
+For `ElT = Float64`, if the expectation value is complex, raises a warning!
 """
-expectC(psi::MPS, opstr::String, pos::Int) = expectC(psi, op(opstr, siteind(psi, pos)))
-expectR(psi::MPS, opstr::String, pos::Int) = expectR(psi, op(opstr, siteind(psi, pos)))
+measure(::Type{T}, psi::MPS, opstr::String,
+        pos::Int) where T <: Union{ComplexF64, Float64} =
+            measure(T, psi, op(opstr, siteind(psi, pos)))
+
+measure(psi::MPS, opstr::String, pos::Int) =
+    measure(ComplexF, psi, opstr, Int)
 
 #################################################################################
 
 """
-    function expectC(psi::MPS, opstr::String; kwargs...)
-    function expectR(psi::MPS, opstr::String; kwargs...)
+    function measure(::Type{ElT} = ComplexF64, psi::MPS, opstr::String; kwargs...)
 
 Returns (complex / real) local expectation values (`::Vector{ComplexF64}` / `::Vector{Float64}`)
 of a given MPS `psi::MPS` for a given operator name (`opstr::String`) at all the sites.
@@ -133,33 +138,31 @@ of a given MPS `psi::MPS` for a given operator name (`opstr::String`) at all the
 Optionally, for specific sites, keyword argument `sites` can be specified, e.g.,
 `sites = [1, 2, 3]`.
 
-For `expectR`, if the expectation value is complex, raises a warning!
+For `ElT = Float64`, if the expectation value is complex, raises a warning!
 """
-function expectC(psi::MPS, opstr::String; kwargs...)
+function measure(::Type{T}, psi::MPS, opstr::String;
+                 kwargs...) where T <: Union{ComplexF64, Float64}
     N = length(psi)
     sites = get(kwargs, :sites, 1:N)
-    return map(pos -> expectC(psi, opstr, pos), sites)
+    return map(pos -> measure(T, psi, opstr, pos), sites)
 end
 
-function expectR(psi::MPS, opstr::String; kwargs...)
-    N = length(psi)
-    sites = get(kwargs, :sites, 1:N)
-    return map(pos -> expectR(psi, opstr, pos), sites)
-end
+measure(psi::MPS, opstr::String; kwargs...) =
+    measure(ComplexF64, psi, opstr; kwargs)
 
 #################################################################################
 
 """
-    function expectC(psi::MPS, optens::Vector{ITensor})
-    function expectR(psi::MPS, optens::Vector{ITensor})
-
+    function measure(::Type{ElT} = ComplexF64, psi::MPS, optens::Vector{ITensor})
+    
 Returns (complex / real) multi-site expectation value (`::ComplexF64` / `::Float64`)
 of a given MPS `psi::MPS` for a given vector of single-site operators
 (`optens::Vector{ITensor}`).
 
-For `expectR`, if the expectation value is complex, raises a warning!
+For `ElT = Float64`, if the expectation value is complex, raises a warning!
 """
-function expectC(psi::MPS, optens::Vector{ITensor})::ComplexF64
+function measure(::Type{T}, psi::MPS,
+                 optens::Vector{ITensor})::T where T <: Union{ComplexF64, Float64}
 
     oppairs = Vector{Pair{ITensor, Int}}()
     removeqn = false
@@ -169,7 +172,7 @@ function expectC(psi::MPS, optens::Vector{ITensor})::ComplexF64
             hasind(o, siteind(psi, pos)') &&
             ndims(o) == 2
         if !pass
-            error("`expectC()`: Error in operator tensors !!")
+            error("`measure()`: Error in operator tensors !!")
         end
         !hasqns(o) && hasqns(psi) && (removeqn = true)
         push!(oppairs, o => pos)
@@ -221,40 +224,43 @@ function expectC(psi::MPS, optens::Vector{ITensor})::ComplexF64
     C *= conditional_removeqns(psi[maxpos])
     C *= conditional_removeqns(opdict[maxpos])
     C *= conditional_removeqns(dag(prime(prime(psi[maxpos], jl), "Site")))
+
+    val = complex(scalar(C))
     
-    return complex(scalar(C))
-end
-
-function expectR(psi::MPS, optens::Vector{ITensor})::Float64
-    val = expectC(psi, optens)
-    if abs(imag(val)) > 100 * Float64_threshold()
-        @warn "`expectR()`: Got complex number with |imaginary part| > $(100 * Float64_threshold()), use `expectC instead !!"
+    if T <: Complex
+        return val
+    else
+        if abs(imag(val)) > 100 * Float64_threshold()
+            @warn "`measure(::Float64)`: Got complex number with |imaginary part| > $(100 * Float64_threshold()) !!"
+        end
+        return real(val)
     end
-    return real(val)
 end
 
+measure(psi::MPS, optens::Vector{ITensor}) =
+    measure(ComplexF64, psi, optens)
+    
 #################################################################################
 
 """
-    function expectC(psi::MPS, oppairs::Vector{Pair{String, Int}};
-                     isfermions::Bool = true)
-    function expectR(psi::MPS, oppairs::Vector{Pair{String, Int}};
+    function measure(::Type{ElT} = ComplexF64, psi::MPS, oppairs::Vector{Pair{String, Int}};
                      isfermions::Bool = true)
 
 Returns (complex / real) multi-site expectation value (`::ComplexF64` / `::Float64`) of
 a given MPS `psi::MPS`. `oppairs::Vector{Pair{String, Int}}` contains pairs of operator
-names (`String`) and site locations (`Int`). E.g., for <ψ|OᵢOⱼOₖ... |ψ>, `oppairs = ["O" => i, "O" => j, "O" => k,...]`.
+names (`String`) and site locations (`Int`).
+E.g., for <ψ|OᵢOⱼOₖ... |ψ>, `oppairs = ["O" => i, "O" => j, "O" => k,...]`.
 
 Fermionic JW strings are added automatically for fermionic operators if `isfermions::Bool = true` (default).
 
-For `expectR`, if the expectation value is complex, raises a warning!
+For `ElT = Float64`, if the expectation value is complex, raises a warning!
 
 #### Example:
-    valueC = expectC(psi, ["Cdag" => 2, "C" => 6, "Cdag" => 9, "C" => 12])
-    valueR = expectR(psi, ["Cdag" => 2, "C" => 6, "Cdag" => 9, "C" => 12])
+    valueC = measure(psi, ["Cdag" => 2, "C" => 6, "Cdag" => 9, "C" => 12])
+    valueR = measure(Float64, psi, ["Cdag" => 2, "C" => 6, "Cdag" => 9, "C" => 12])
 """
-function expectC(psi::MPS, oppairs::Vector{Pair{String, Int}};
-                 isfermions::Bool = true)::ComplexF64
+function measure(::Type{T}, psi::MPS, oppairs::Vector{Pair{String, Int}};
+                 isfermions::Bool = true)::T where T <: Union{ComplexF64, Float64}
     
     sites = siteinds(psi)
     if isfermions
@@ -262,17 +268,11 @@ function expectC(psi::MPS, oppairs::Vector{Pair{String, Int}};
     end
     
     optens = ITensor[op(x.first, siteind(psi, x.second)) for x in oppairs]
-    return isfermions ? perm * expectC(psi, optens) : expectC(psi, optens) 
+    return isfermions ? perm * measure(T, psi, optens) : measure(T, psi, optens) 
 end
 
-function expectR(psi::MPS, oppairs::Vector{Pair{String, Int}};
-                 isfermions::Bool = true)::Float64
-    val = expectC(psi, oppairs; isfermions)
-    if abs(imag(val)) > 100 * Float64_threshold()
-        @warn "`expectR()`: Got complex number with |imaginary part| > $(100 * Float64_threshold()), use `expectC instead !!"
-    end
-    return real(val)
-end
+measure(psi::MPS, oppairs::Vector{Pair{String, Int}}; isfermions::Bool = true) =
+    measure(ComplexF64, psi, oppairs; isfermions)
 
 #################################################################################
 
