@@ -373,7 +373,7 @@ end
 
 Returns the `Matrix-Vector` product between the environment and input ITensor `v`.
 """
-product(sysenv::StateEnvs, v::ITensor)::ITensor = product(sysenv.PH, v)
+product(sysenv::StateEnvs, v::ITensor)::ITensor = sysenv.PH(v)
 
 (sysenv::StateEnvs)(v::ITensor) = product(sysenv, v)
 
