@@ -59,7 +59,7 @@ psi = getpsi(sysenv)
 # psi = sysenv.psi
 ```
 Most often, it is better to do a single-site DMRG (without any noise) after standard two-site update for better
-convergence. Such lowe-level function using `StateEnvs` is useful for that.
+convergence. Such lower-level function using `StateEnvs` is useful for that.
 ```
 sysenv = StateEnvs(psi0, H)
 
@@ -83,8 +83,9 @@ built from a single MPO.
 ```
 krylov_extend!(sysenv; extension_applyH_maxdim = 40)
 ```
-**Note**: Global Subspace Expansion can result into huge MPS bond dimension. That is why
-the named input parameters of [`krylov_extend!`](@ref krylov_extend!(sysenv::StateEnvs{ProjMPO}; kwargs...)) should be chosen carefully.
+!!! warning
+    Global Subspace Expansion may result into huge MPS bond dimension. That is why
+    the named input parameters of [`krylov_extend!`](@ref krylov_extend!(sysenv::StateEnvs{ProjMPO}; kwargs...)) should be chosen carefully.
 
 ## Excited state DMRG
 

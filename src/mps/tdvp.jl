@@ -227,7 +227,7 @@ Therefore, for real-time dynamics with step `dt`, `time_step` should be `-im * d
 
 #### Named arguments for `solver` and their default values:
 See the documentation of KrylovKit.jl.
- - `ishermitian::Bool = true`
+ - `ishermitian::Bool = true`.
  - `solver_tol::Float64 = 1E-12`.
  - `solver_krylovdim::Int = 30`.
  - `solver_maxiter::Int = 100`.

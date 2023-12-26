@@ -301,7 +301,7 @@ function LinkTensorsTTN(psi::TTN, optens::Vector{ITensor})::LinkTensorsTTN
 
     positions = sort(collect(keys(opdict)))
     for ii = 2 : length(positions)
-        dummyindex = hasqns(sites) ? 
+        dummyindex = !removeqn ? 
             Index(QN() => 1; tags = "OpLink") : 
             Index(1; tags = "OpLink")
         opdict[positions[ii-1]] *= onehot(dummyindex => 1)

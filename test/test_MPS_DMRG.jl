@@ -132,6 +132,10 @@ let
 
         @show measure(psi_gr, "Sz")
         @show measure(psi_gr, ["Sz" => 1, "Sz" => 10])
+        s1 = removeqns(sites[1])
+        s10 = removeqns(sites[10])
+        @show measure(psi_gr, [op("Sz", s1), op("Sz", s10)])
+        @show measure(psi_gr, [op("Sx", s1), op("Sx", s10)])
         
         @time en1, psi1 = dmrg_ex_2(sites, H, psi0, psi_gr;
                                     nsite = nsite)

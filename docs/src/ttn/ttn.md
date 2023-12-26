@@ -21,11 +21,18 @@ described in [Phys. Rev. B **90**, 125154 (2014)](https://journals.aps.org/prb/a
 ---
 
 Each tensor in the TTN are indexed by a pair (`Tuple`) of `Int`s = `(ll, nn)`.
-```
-const Int2 = Tuple{Int, Int}
+```@docs
+Int2
 ```
 In the default scenario, `ll` denotes the layer index and `nn` denotes the tensor index at each layer (see the image above). The counting for `ll`, in the default case, starts at the bottom (towards to top level), while `nn` counts from left. The structure of the network is defined by a
-[`Graph{Int2}`](@ref "The Graph object") object.
+[`Graph{Int2}`](@ref "The Graph object") object. The link / bond between two neighboring nodes is
+denoted by a `LinkTypeTTN` object, an **unordered** pair of `Int2`s.
+```@docs
+LinkTypeTTN
+```
+!!! info
+    The order of the nodes inside `LinkTypeTTN` is irrelevant, i.e.,
+    `LinkTypeTTN(node1, node2) == LinkTypeTTN(node2, node1)`.
 
 ---
 

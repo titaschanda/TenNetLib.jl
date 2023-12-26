@@ -34,7 +34,12 @@ settings = Dict(
                 "Tree Tensor Networks" => "ttn/ttn.md",
                 "The TTN object" => "ttn/ttn_struct.md",
                 "Generating TTN" => "ttn/ttn_gen.md",
-                "StateEnvsTTN" => "ttn/state_envs_ttn.md"
+                "StateEnvsTTN" => "ttn/state_envs_ttn.md",
+                "Perform local updates" => "ttn/update_site_ttn.md",
+                "Sweeping through the TTN" => "ttn/sweep_ttn.md",
+                "Optimizing TTN" => "ttn/optimize_ttn.md",
+                "Example: Optimizing TTN" => "ttn/example_optimize.md",
+                "Measuring the TTN" => "ttn/measure_ttn.md"
             ]
         ],
     :format => Documenter.HTML(

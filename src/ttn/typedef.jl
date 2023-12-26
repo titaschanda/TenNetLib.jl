@@ -3,7 +3,7 @@
 """
     const Int2 = Tuple{Int, Int}
 
-Tuple of two `Int`. 
+Tuple of two `Int`s. 
 """
 const Int2 = Tuple{Int, Int}
 Int2() = (typemin(Int), typemin(Int))
@@ -16,7 +16,7 @@ Int2() = (typemin(Int), typemin(Int))
         second::Int2
     end
 
-Link type for TTN.
+Link / bond between two nodes `first` and `second`.
 """
 struct LinkTypeTTN
     first::Int2

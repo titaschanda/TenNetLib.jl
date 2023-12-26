@@ -31,14 +31,15 @@ dynamic_fullsweep!(sysenv::StateEnvs, solver, swdata::SweepData; kwargs...)
 
 ## Global Subspace Expansion
 
-Following [Phys. Rev. B **102**, 094315 (2020)](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.102.094315), a Global Subspace Expansion can be performed using Krylov subspace if the
-environments are created by a single `MPO`.
+Following [Phys. Rev. B **102**, 094315 (2020)](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.102.094315), a Global Subspace Expansion can be performed using Krylov subspace if the environments are created by a single `MPO`.
 
-Apart from TDVP, Global Subspace Expansion is also very useful for DMRG to get rid of nasty
-local minimas.
 
 ```@docs
 krylov_extend!(psi::MPS, H::MPO; kwargs...)
 krylov_extend!(sysenv::StateEnvs{ProjMPO}; kwargs...)
 ```
+
+!!! info
+    Apart from TDVP, Global Subspace Expansion is also very useful for DMRG to get rid of nasty
+    local minimas.
 

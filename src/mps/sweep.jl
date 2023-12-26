@@ -21,8 +21,7 @@ Holds historical data after each (full)sweep. Requires for convergence check etc
    previous halfsweep.
 
 #### Default constructor:
- - `SweepData()`: Initialize an empty `SweepData` object. Required to call following functions
-at the first time.
+ - `SweepData()`: Initialize an empty `SweepData` object.
 """
 mutable struct SweepData
     sweepcount::Int
@@ -42,7 +41,7 @@ SweepData() = SweepData(0, Int[], Float64[], Float64[], Float64[], Float64[])
 Shallow copy of `SweepData`.
 """
 Base.copy(swdata::SweepData) = SweepData(swdata.sweepcount,
-                                         Base.copy(swdata.sweepcount),
+                                         Base.copy(swdata.maxchi),
                                          Base.copy(swdata.energy),
                                          Base.copy(swdata.entropy),
                                          Base.copy(swdata.mastruncerr),
@@ -78,7 +77,7 @@ Perform a fullsweep (left-to-right and right-to-left) by `solver`.
 
 #### Named arguments for `solver` and their default values:
 See the documentation of KrylovKit.jl.
- - `ishermitian::Bool = true`
+ - `ishermitian::Bool = true`.
  - `solver_tol::Float64 = 1E-14` if `eig_solver`, `1E-12` if `exp_solver`.
  - `solver_krylovdim::Int = 5` if `eig_solver`, `30` if `exp_solver`.
  - `solver_maxiter::Int = 2` if `eig_solver`, `100` if `exp_solver`.
@@ -226,7 +225,7 @@ that bond in the subsequent halfsweep, otherwise performs two-site update.
 
 #### Named arguments for `solver` and their default values:
 See the documentation of KrylovKit.jl.
- - `ishermitian::Bool = true`
+ - `ishermitian::Bool = true`.
  - `solver_tol::Float64 = 1E-14` if `eig_solver`, `1E-12` if `exp_solver`.
  - `solver_krylovdim::Int = 3` if `eig_solver`, `30` if `exp_solver`.
  - `solver_maxiter::Int = 1` if `eig_solver`, `100` if `exp_solver`.

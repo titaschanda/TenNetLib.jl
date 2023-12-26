@@ -50,7 +50,7 @@ Base.copy(params::OptimizeParamsTTN) = OptimizeParamsTTN(Base.copy(params.maxdim
 
 """
     function OptimizeParamsTTN(;maxdim::Vector{Int}, nsweeps::Vector{Int}, 
-                               cutoff::Union{Vector{Float64}, Float64} = _Float64_Threshold,
+                               cutoff::Union{Vector{Float64}, Float64} = Float64_threshold(),
                                noise::Union{Vector{Float64}, Float64, Int} = 0.0,
                                noisedecay::Union{Vector{Float64}, Float64, Int} = 1.0,
                                disable_noise_after::Union{Vector{Int}, Int} = typemax(Int))
@@ -71,7 +71,7 @@ Constructor for `OptimizeParamsTTN`. Takes named arguments.
    throughout the optimization.
 """
 function OptimizeParamsTTN(;maxdim::Vector{Int}, nsweeps::Vector{Int}, 
-                           cutoff::Union{Vector{Float64}, Float64} = _Float64_Threshold,
+                           cutoff::Union{Vector{Float64}, Float64} = Float64_threshold(),
                            noise::Union{Vector{Float64}, Float64, Int} = 0.0,
                            noisedecay::Union{Vector{Float64}, Float64, Int} = 1.0,
                            disable_noise_after::Union{Vector{Int}, Int} = typemax(Int))
@@ -109,7 +109,7 @@ end
     function optimize!(sysenv::StateEnvsTTN,
                        params::OptimizeParamsTTN,
                        sweeppath::Vector{Int2};
-                       kwargs...)::SweepDataTTN
+                       kwargs...)
 
 Performs optimization of the TTN.
 
@@ -143,7 +143,7 @@ See documentation of KrylovKit.jl.
  - `solver_check_convergence::Bool = false`.
 
 #### Return values:
- - `SweepData`
+ - `SweepDataTTN`
 """
 function optimize!(sysenv::StateEnvsTTN,
                    params::OptimizeParamsTTN,
@@ -228,17 +228,18 @@ end
     function optimize(psi0::TTN, H::CouplingModel,
                       params::OptimizeParamsTTN,
                       sweeppath::Vector{Int2};
-                      kwargs...)::Tuple{Float64, TTN}
+                      kwargs...)
 
     function optimize(psi0::TTN, H::CouplingModel, Ms::Vector{TTN},
                       params::OptimizeParamsTTN,
                       sweeppath::Vector{Int2};
-                      kwargs...)::Tuple{Float64, TTN}
+                      kwargs...)
 
 Performs optimization of the TTN.
 
 #### Arguments:
- - `sysenv::StateEnvsTTN`.
+ - `psi0::TTN`: Initial TTN.
+ - `H::CouplingModel`, `Ms::Vector{MPS}`.
  - `params::OptimizationParamsTTN`.
  - `sweeppath::Vector{Int2}`: The path to be followed during optimization sweep. A vector
    that must contain all the nodes atleast once.

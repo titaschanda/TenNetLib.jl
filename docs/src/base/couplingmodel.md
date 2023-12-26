@@ -1,7 +1,7 @@
 # `CouplingModel`
 
 TeNLib.jl degines as struct, called the `CouplingModel`, to store the Hamiltonian terms. 
-In case of MPS based algorithms, `CouplingModel` can be replaced by `MPO` without modifying
+In case of MPS based algorithms, `CouplingModel` can replace `MPO` without modifying
 rest of the code. For Tree Tensor Network (TTN) codes, only `CouplingModel` can be used.
 Different elements of `CouplingModel` are contracted in parallel.
 

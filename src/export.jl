@@ -3,9 +3,7 @@
 export
 
     # base/global_variables.jl
-    _Float64_threshold,
     Float64_threshold,
-    _using_threaded_loop,
     using_threaded_loop,
     enable_threaded_loop,
     disable_threaded_loop,
@@ -15,13 +13,9 @@ export
     Vector2,
     IDType,
     IDTensors,
-    eltype,
 
     # base/helper_internal_funcs.jl
     gen_rand_id,
-    _divide_by_chunksize,
-    _add_oplinks,
-    _directsum,
     combineinds,
     indexintersection,
         
@@ -43,7 +37,6 @@ export
     nodes_from_bfs,
     shortest_path,
     nextnode_in_path,
-    _has_cycle_dfs,
     has_cycle,
     find_sum_central_node,
     find_eccentric_central_node,
@@ -63,23 +56,16 @@ export
     mergeterms,
 
     # base/opstringsmpo.jl
-    _chunksum_mpoterms,
 
     # base/couplingmodel.jl
     CouplingModel,
-    _initCouplingModel,
 
 
     # mps/projmps2.jl
     ProjMPS2,
     set_nsite!,
-    _makeL!,
-    makeL!,
-    _makeR!,
-    makeR!,
     position!,
     contract,
-    proj_mps,
     product,
 
     # mps/projmpo_mps2.jl
@@ -108,15 +94,7 @@ export
     ProjCouplingModel,
     set_nsite!,
     nsite,
-    site_range,
-    lproj,
-    rproj,
-    _makeL!,
-    makeL!,
-    _makeR!,
-    makeR!,
     position,
-    _contract,
     product,
 
     # mps/projcouplingmodel_mps.jl
@@ -137,9 +115,6 @@ export
     product,
 
     # base/update_site.jl
-    halfsweep_done,
-    _update_two_site!,
-    _update_one_site!,
     update_position!,
     
     # mps/sweep.jl
@@ -147,7 +122,6 @@ export
     fullsweep!,
     dynamic_fullsweep!,
     krylov_extend!,
-    _krylov_addbasis,
 
     # mps/dmrg.jl
     DMRGParams,
@@ -196,21 +170,14 @@ export
     isometrize!,
 
     # ttn/helper_internal_funcs.jl
-    _minimum_power2_greater_than,
-    _get_links,
     
     # ttn/ttn_generators.jl
-    _distribute_site_positions,
     default_graph_sitenodes,
-    _ttn_ind_reducedim!,
-    _ttn_ind_cleanup_one!,
-    _ttn_ind_cleanup!,
     randomTTN,
     default_randomTTN,
 
     # ttn/linktensors.jl
     LinkTensorsTTN,
-    _collect_link_tensors,
     move_linktensors_to_next!,
     move_linktensors!,
     product,
@@ -225,8 +192,7 @@ export
     LinkProjTTN,
 
     # ttn/measure_ttn.jl
-    expectC,
-    expectR,
+    measure,
 
     # ttn/environment.jl
     EnvCouplingModelTTN,

@@ -176,7 +176,7 @@ end
 """
     update_position!(sysenv::StateEnvs, solver, pos::Int, nsite::Int, ortho::String; kwargs...)
 
-Update StateEnvs at position `pos` by `solver`.
+Updates StateEnvs at position `pos` by `solver`.
 
 #### Arguments:
  - `sysenv::StateEnvs`
@@ -197,7 +197,7 @@ Update StateEnvs at position `pos` by `solver`.
 
 #### Named arguments for `solver` and their default values:
 See the documentation of KrylovKit.jl.
- - `ishermitian::Bool = true`
+ - `ishermitian::Bool = true`.
  - `solver_tol::Float64 = 1E-14` if `eig_solver`, `1E-12` if `exp_solver`.
  - `solver_krylovdim::Int = 5` if `eig_solver`, `30` if `exp_solver`.
  - `solver_maxiter::Int = 2` if `eig_solver`, `100` if `exp_solver`.
@@ -208,7 +208,7 @@ See the documentation of KrylovKit.jl.
 #### Return values:
  - `::Float64`: Energy.
  - `::Float64`: Truncation Error.
- - `Vector{Float64}`: SVD spectrum.
+ - `::Vector{Float64}`: SVD spectrum.
 """
 function update_position!(sysenv::StateEnvs, solver,
                           pos::Int, nsite::Int, ortho::String; 

@@ -14,7 +14,7 @@ The documentation for TeNLib.jl can be found [**here**](https://titaschanda.gith
 
 TeNLib.jl features widely-used Tensor Network (TN) codes, designed with a **multi-layered abstraction**
 to cater to diverse user needs. The library provides users with varying levels of control over their computations.
-Presently, TeNLib.jl presents an array of functionalities for:
+Currently, TeNLib.jl presents an array of functionalities for:
 * *(a)* **Finite-size Matrix-Product States (MPS)**: Different variants of Density Matrix Renormalization Group (DMRG) and Time Dependent Variational Principle (TDVP) (including subspace expansion) methods.
 * *(b)* **Tree Tensor Network (TTN)**: Variational search for the ground state and first few excited states.
 
@@ -33,6 +33,17 @@ pkg> add ITensors
 pkg> add https://github.com/titaschanda/TeNLib.jl
 ```
 
+## Found an Issue or Bug?
+
+> "Beware of bugs in the above code; I have only proved it correct, not tried it."
+>    -- Donald Knuth
+
+
+If you find bugs or a mistakes of any kind, please let us know by adding an issue to the
+[GitHub issue tracker](https://github.com/titaschanda/TeNLib.jl/issues).
+You are also welcome to submit a [pull request](https://github.com/titaschanda/TeNLib.jl/pulls).
+
+
 ## Future functionality?
 
 Here is a list for future additions in the decreasing order of priority. Any help / suggestion is welcome.
@@ -40,6 +51,13 @@ Here is a list for future additions in the decreasing order of priority. Any hel
 * **Infinite DMRG (iDMRG)** and/or **Variational Uniform Matrix Product States (VUMPS)** to tackle 1D / quasi-1D problems directly at the thermodynamic limit.
 * **Projected Entangled Pair States (PEPS)** for 2D problems.
 * Real-time evolution method using PEPS and TTN.
+
+Also, please feel free to ask about a new feature by adding a new request to the
+[GitHub issue tracker](https://github.com/titaschanda/TeNLib.jl/issues) labelled
+`feature request`. Note that submitting a pull request, providing the needed changes to
+introduced your requested feature, will speed up the process.
+
+
 
 ## Example: A simple DMRG code
 
@@ -145,7 +163,4 @@ let
 			       
     en, psi = optimize(psi0, H, params, sweeppath)
 end
-```
-!!! info
-    "`OpStrings` and `CouplingModel` can be also used for MPS based codes without modifying other parts of the code."
-    
+```    

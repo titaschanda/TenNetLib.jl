@@ -134,7 +134,7 @@ to trigger this early stopping.
 
 #### Named arguments for `solver` and their default values:
 See the documentation of KrylovKit.jl.
- - `ishermitian::Bool = true`
+ - `ishermitian::Bool = true`.
  - `solver_tol::Float64 = 1E-14`.
  - `solver_krylovdim::Int = 5`.
  - `solver_maxiter::Int = 2`.
@@ -280,7 +280,7 @@ to trigger this early stopping.
 
 #### Named arguments for `eig_solver` and their default values:
 See the documentation of KrylovKit.jl.
- - `ishermitian::Bool = true`
+ - `ishermitian::Bool = true`.
  - `solver_tol::Float64 = 1E-14`.
  - `solver_krylovdim::Int = 5`.
  - `solver_maxiter::Int = 2`.
