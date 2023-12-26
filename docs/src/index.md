@@ -35,7 +35,7 @@ pkg> add ITensors
 pkg> add https://github.com/titaschanda/TeNLib.jl
 ```
 
-## Found an Issue or Bug?
+## Found an issue or bug?
 
 > "Beware of bugs in the above code; I have only proved it correct, not tried it."
 >    -- Donald Knuth
