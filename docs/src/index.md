@@ -150,8 +150,8 @@ let
     
     for j=1:N-1
         os += 1, "Sz" => j,"Sz" => j+1
-        os += 0.5, "S+" =>j, "S-" => j+1
-        os += 0.5, "S-"=>j, "S+" => j+1
+        os += 0.5, "S+" => j, "S-" => j+1
+        os += 0.5, "S-"=> j, "S+" => j+1
     end
     
     H = CouplingModel(os,sites)
