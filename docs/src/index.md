@@ -10,6 +10,8 @@ The source code for TeNLib.jl can be found on [GitHub](https://github.com/titasc
 
 The documentation for TeNLib.jl can be found [**here**](https://titaschanda.github.io/TeNLib.jl/dev/).
 
+This library requires Julia 1.7+.
+
 ## Overview
 
 TeNLib.jl features widely-used Tensor Network (TN) codes, designed with a **multi-layered abstraction**
