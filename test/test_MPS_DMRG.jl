@@ -1,6 +1,6 @@
 
 using ITensors
-using TeNLib
+using TenNetLib
 
 
 function coupling_model(;qn = true)
@@ -61,7 +61,7 @@ function dmrg_2(sites, H, psi0;
                         cutoff = 1e-14, noise = 1e-3, noisedecay = 2,
                         disable_noise_after = 2)      
 
-    en, psi = TeNLib.dmrg(psi0, H, params, nsite)
+    en, psi = TenNetLib.dmrg(psi0, H, params, nsite)
 
     return en, psi 
 end
@@ -90,7 +90,7 @@ function dmrg_ex_2(sites, H, psi0, psi_gr;
                         cutoff = 1e-14, noise = 1e-3, noisedecay = 2,
                         disable_noise_after = 2)      
     
-    en, psi = TeNLib.dmrg(psi0, H, [psi_gr], params, nsite; weight = 10.0)
+    en, psi = TenNetLib.dmrg(psi0, H, [psi_gr], params, nsite; weight = 10.0)
     
     return en, psi
 end

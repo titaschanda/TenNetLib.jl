@@ -4,7 +4,7 @@ Functions to perfom (and control) DMRG runs.
 
 ## `DMRGParams`
 
-TeNLib.jl defines a struct, called  `DMRGParams`, to control DMRG simulations.
+TenNetLib.jl defines a struct, called  `DMRGParams`, to control DMRG simulations.
 
 ```@docs
 DMRGParams

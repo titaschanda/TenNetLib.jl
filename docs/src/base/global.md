@@ -1,6 +1,6 @@
 # Controlling global behaviors
 
-TeNLib.jl provides following functions to control global behaviors for Tensor Network simulations.
+TenNetLib.jl provides following functions to control global behaviors for Tensor Network simulations.
 
 ```@docs
 Float64_threshold

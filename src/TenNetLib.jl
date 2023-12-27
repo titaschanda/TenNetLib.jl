@@ -1,5 +1,5 @@
 
-module TeNLib
+module TenNetLib
 
 ##*********** MAIN Imports ************************
 

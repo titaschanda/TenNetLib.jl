@@ -1,4 +1,4 @@
-using TeNLib
+using TenNetLib
 using Test
 
 @testset "MPS" begin

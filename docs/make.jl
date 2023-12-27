@@ -1,11 +1,11 @@
 push!(LOAD_PATH,"../src/")
 
 using ITensors, DataStructures
-using Documenter, TeNLib
+using Documenter, TenNetLib
 
 ############################################################################
 
-sitename = "TeNLib.jl"
+sitename = "TenNetLib.jl"
 
 settings = Dict(
     :pages =>
@@ -44,7 +44,7 @@ settings = Dict(
         ],
     :format => Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
-        description = "A Tensor Network Library (TeNLib.jl) built on top of ITensors.jl for quantum many-body problems.",
+        description = "A Tensor Network Library (TenNetLib.jl) built on top of ITensors.jl for quantum many-body problems.",
         assets=["assets/favicon.ico"]),    
     :doctest => true,
     :checkdocs => :none,
@@ -64,7 +64,7 @@ if get(ENV, "GITHUB_EVENT_NAME", nothing) == "workflow_dispatch"
 end
 
 deploydocs(;
-  repo="github.com/titaschanda/TeNLib.jl.git",
+  repo="github.com/titaschanda/TenNetLib.jl.git",
   devbranch="main",
   push_preview=true,
   deploy_config=Documenter.GitHubActions(),

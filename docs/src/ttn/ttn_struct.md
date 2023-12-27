@@ -23,7 +23,7 @@ LinearAlgebra.normalize!(ttn::TTN)
 ```
 
 !!! info
-    To conserve global symmetry in TTN, TeNLib.jl uses a dummy index of dimension one whose flux
+    To conserve global symmetry in TTN, TenNetLib.jl uses a dummy index of dimension one whose flux
     fixes the superselection sector. This dummy index is attached to one of the tensors of TTN,
     usually the eccentric central node. Unlike MPS, the fluxes of all tensors in TTN are zero.
 

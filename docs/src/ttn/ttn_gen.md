@@ -1,6 +1,6 @@
 # Generating `TTN`
 
-TeNLib.jl defines following functions to generate TTNs with random entries.
+TenNetLib.jl defines following functions to generate TTNs with random entries.
 
 For the standard TTN with the default hierarchical binary tree structure, follwoing function can
 be used.

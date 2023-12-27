@@ -14,7 +14,7 @@ quantum correlations comapred to MPS. Moreover, simulations for systems with per
 TTNs have found their place for simulating 2D or pseudo-2D ladder/cylinder systems with PBC
 where the performance of MPS is not adequate.
 
-TeNLib.jl implements the unconstrained optimization for obtaining
+TenNetLib.jl implements the unconstrained optimization for obtaining
 ground as well as excited states as
 described in [Phys. Rev. B **90**, 125154 (2014)](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.90.125154) and [SciPost Phys. Lect. Notes 8 (2019)] (https://scipost.org/10.21468/SciPostPhysLectNotes.8).
 
@@ -37,7 +37,7 @@ LinkTypeTTN
 ---
 
 !!! info
-    TeNLib.jl can automatically handle system-sizes that are not powers of 2. No special care is
+    TenNetLib.jl can automatically handle system-sizes that are not powers of 2. No special care is
     needed for such system-sizes.
 
 | TTN for system-size 12 | TTN for system-size 14|
@@ -48,7 +48,7 @@ LinkTypeTTN
 
 
 !!! info
-    The TTN codes defined in TeNLib.jl can readily work, without any changes,
+    The TTN codes defined in TenNetLib.jl can readily work, without any changes,
     **for any loop-free tensor networks**, e.g., Fork Tensor Networks.
 
 !!! tip

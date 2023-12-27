@@ -4,7 +4,7 @@ Functions to optimize TTN.
 
 ## `OptimizeParamsTTN`
 
-TeNLib.jl defines a struct, called  `OptimizeParamsTTN`, to control TTN optimizations.
+TenNetLib.jl defines a struct, called  `OptimizeParamsTTN`, to control TTN optimizations.
 
 ```@docs
 OptimizeParamsTTN

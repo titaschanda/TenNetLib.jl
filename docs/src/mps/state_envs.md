@@ -1,6 +1,6 @@
 # `StateEnvs`: A container to store the MPS and its environments
 
-At the lowest-level of abstraction, TeNLib.jl defines `StateEnvs` to hold an MPS and its
+At the lowest-level of abstraction, TenNetLib.jl defines `StateEnvs` to hold an MPS and its
 environments to be modified in place.
 
 Skip this part if you want to avoid lower-level abstraction.
@@ -23,7 +23,7 @@ updateH!(sysenv::StateEnvs{ProjCouplingModel_MPS}, H::CouplingModel, Ms::Vector{
 nsite(sysenv::StateEnvs)
 set_nsite!(sysenv::StateEnvs, nsite::Int)
 position!(sysenv::StateEnvs, pos::Int)
-TeNLib.product(sysenv::StateEnvs, v::ITensor)
+TenNetLib.product(sysenv::StateEnvs, v::ITensor)
 Base.copy(sysenv::StateEnvs)
 Base.length(sysenv::StateEnvs)
 ```

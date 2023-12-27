@@ -1,5 +1,5 @@
 using ITensors
-using TeNLib
+using TenNetLib
 
 
 function coupling_model(;qn = true)

@@ -1,29 +1,29 @@
-# TeNLib.jl
+# TenNetLib.jl
 
-A Tensor Network Library (TeNLib.jl) built on top of [ITensors.jl](https://github.com/ITensor/ITensors.jl) for quantum many-body problems.
+A Tensor Network Library (TenNetLib.jl) built on top of [ITensors.jl](https://github.com/ITensor/ITensors.jl) for quantum many-body problems.
 
 | **Build Status** | **Documentation** |
 |:----------------:|:-----------------:|
-| [![Build Status](https://github.com/titaschanda/TeNLib.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/titaschanda/TeNLib.jl/actions/workflows/CI.yml?query=branch%3Amain) | [![Build Status](https://github.com/titaschanda/TeNLib.jl/actions/workflows/documentation.yml/badge.svg?branch=main)](https://github.com/titaschanda/TeNLib.jl/actions/workflows/documentation.yml?query=branch%3Amain) |
+| [![Build Status](https://github.com/titaschanda/TenNetLib.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/titaschanda/TenNetLib.jl/actions/workflows/CI.yml?query=branch%3Amain) | [![Build Status](https://github.com/titaschanda/TenNetLib.jl/actions/workflows/documentation.yml/badge.svg?branch=main)](https://github.com/titaschanda/TenNetLib.jl/actions/workflows/documentation.yml?query=branch%3Amain) |
 
-The source code for TeNLib.jl can be found on [GitHub](https://github.com/titaschanda/TeNLib.jl)
+The source code for TenNetLib.jl can be found on [GitHub](https://github.com/titaschanda/TenNetLib.jl)
 
-The documentation for TeNLib.jl can be found [**here**](https://titaschanda.github.io/TeNLib.jl/dev/).
+The documentation for TenNetLib.jl can be found [**here**](https://titaschanda.github.io/TenNetLib.jl/dev/).
 
 This library requires Julia 1.7+.
 
 ## Overview
 
-TeNLib.jl features widely-used Tensor Network (TN) codes, designed with a **multi-layered abstraction**
+TenNetLib.jl features widely-used Tensor Network (TN) codes, designed with a **multi-layered abstraction**
 to cater to diverse user needs. The library provides users with varying levels of control over their computations.
-Currently, TeNLib.jl presents an array of functionalities for:
+Currently, TenNetLib.jl presents an array of functionalities for:
 * *(a)* **Finite-size Matrix-Product States (MPS)**: Different variants of Density Matrix Renormalization Group (DMRG) and Time Dependent Variational Principle (TDVP) (including subspace expansion) methods.
 * *(b)* **Tree Tensor Network (TTN)**: Variational search for the ground state and first few excited states.
 
 
 ## Installation
 
-Currently, TeNLib.jl is not registered on Julia General Registry. To install the library (along with ITensors.jl), you can use the following steps:
+Currently, TenNetLib.jl is not registered on Julia General Registry. To install the library (along with ITensors.jl), you can use the following steps:
 
 ```
 $ julia
@@ -32,7 +32,7 @@ julia> ]
 
 pkg> add ITensors
 
-pkg> add https://github.com/titaschanda/TeNLib.jl
+pkg> add https://github.com/titaschanda/TenNetLib.jl
 ```
 
 ## Found an issue or bug?
@@ -42,8 +42,8 @@ pkg> add https://github.com/titaschanda/TeNLib.jl
 
 
 If you find bugs or a mistakes of any kind, please let us know by adding an issue to the
-[GitHub issue tracker](https://github.com/titaschanda/TeNLib.jl/issues).
-You are also welcome to submit a [pull request](https://github.com/titaschanda/TeNLib.jl/pulls).
+[GitHub issue tracker](https://github.com/titaschanda/TenNetLib.jl/issues).
+You are also welcome to submit a [pull request](https://github.com/titaschanda/TenNetLib.jl/pulls).
 
 
 ## Future functionality?
@@ -55,7 +55,7 @@ Here is a list for future additions in the decreasing order of priority. Any hel
 * Real-time evolution method using PEPS and TTN.
 
 Also, please feel free to ask about a new feature by adding a new request to the
-[GitHub issue tracker](https://github.com/titaschanda/TeNLib.jl/issues) labelled
+[GitHub issue tracker](https://github.com/titaschanda/TenNetLib.jl/issues) labelled
 `feature request`. Note that submitting a pull request, providing the needed changes to
 introduced your requested feature, will speed up the process.
 
@@ -67,7 +67,7 @@ The following code is for a simple DMRG run at **the highest level of abstractio
 
 ```
 using ITensors
-using TeNLib
+using TenNetLib
 
 let
     N = 32
@@ -99,7 +99,7 @@ The following code is for a simple TDVP run at **the highest level of abstractio
 
 ```
 using ITensors
-using TeNLib
+using TenNetLib
 
 let
     N = 32
@@ -141,7 +141,7 @@ Here we use `OpStrings` and `CouplingModel` instead of `OpSum` and `MPO`.
 
 ```
 using ITensors
-using TeNLib
+using TenNetLib
 
 let
     N = 32

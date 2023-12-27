@@ -1,7 +1,7 @@
 # `OpStrings`
 
-TeNLib.jl provides an alternative, called `OpStrings`, to ITensors.jl's `OpSum` to automatically
-construct Hamiltonains / operators. TeNLib.jl's own `CouplingModel` is built from `OpStrings` and
+TenNetLib.jl provides an alternative, called `OpStrings`, to ITensors.jl's `OpSum` to automatically
+construct Hamiltonains / operators. TenNetLib.jl's own `CouplingModel` is built from `OpStrings` and
 is not compatible with `OpSum`.
 
 ## `OpString`
@@ -10,7 +10,7 @@ is not compatible with `OpSum`.
 
 ```@docs
 OpString
-TeNLib.coefficient(opstr::OpString)
+TenNetLib.coefficient(opstr::OpString)
 operators(opstr::OpString)
 minsite(opstr::OpString)
 maxsite(opstr::OpString)

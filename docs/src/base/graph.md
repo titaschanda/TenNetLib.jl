@@ -1,6 +1,6 @@
 # The `Graph` object
 
-TeNLib.jl defines its own undirected graph object, the `Graph`. Currently only used for the Tree
+TenNetLib.jl defines its own undirected graph object, the `Graph`. Currently only used for the Tree
 Tensor Network (TTN) codes.
 
 ```@docs

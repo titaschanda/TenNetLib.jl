@@ -8,7 +8,7 @@ with step `dt`, `time_step` should be `-im * dt`.
 
 ```
 using ITensors
-using TeNLib
+using TenNetLib
 
 let
     N = 32
@@ -83,7 +83,7 @@ For time-dependent Hamiltonian, [`updateH!`](@ref updateH!(engine::TDVPEngine, H
 
 ```
 using ITensors
-using TeNLib
+using TenNetLib
 
 function makeHt(sites, t)
 
