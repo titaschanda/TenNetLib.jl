@@ -23,7 +23,7 @@ Currently, TenNetLib.jl presents an array of functionalities for:
 
 ## Installation
 
-Currently, TenNetLib.jl is not registered on Julia General Registry. To install the library (along with ITensors.jl), you can use the following steps:
+TenNetLib.jl is registered on Julia General Registry. To install the library (along with ITensors.jl), you can use the following steps:
 
 ```
 $ julia
@@ -32,7 +32,7 @@ julia> ]
 
 pkg> add ITensors
 
-pkg> add https://github.com/titaschanda/TenNetLib.jl
+pkg> add TenNetLib
 ```
 
 ## Found an issue or bug?
