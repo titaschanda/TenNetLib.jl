@@ -41,7 +41,7 @@ pkg> add TenNetLib
 >    -- Donald Knuth
 
 
-If you find bugs or a mistakes of any kind, please let us know by adding an issue to the
+If you find bugs or mistakes of any kind, please let us know by adding an issue to the
 [GitHub issue tracker](https://github.com/titaschanda/TenNetLib.jl/issues).
 You are also welcome to submit a [pull request](https://github.com/titaschanda/TenNetLib.jl/pulls).
 
