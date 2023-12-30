@@ -375,7 +375,7 @@ end
 
 Performs Global Subspace Expansion.
 
-#### Arguments and their default values:
+#### Named arguments and their default values:
  - `extension_krylovdim::Int = 3`: Number of Krylov vectors used for GSE.
  - `extension_applyH_cutoff::Float64 = Float64_threshold()`: Cutoff for the application
    the MPO to the MPS.
@@ -413,7 +413,7 @@ end
 
 Performs Global Subspace Expansion. The `StateEnvs` must be created by a single MPO.
 
-#### Arguments and their default values:
+#### Named arguments and their default values:
  - `extension_krylovdim::Int = 3`: Number of Krylov vectors used for GSE.
  - `extension_applyH_cutoff::Float64 = Float64_threshold()`: Cutoff for the application
    the MPO to the MPS.
