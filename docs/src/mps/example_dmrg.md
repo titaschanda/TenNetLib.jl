@@ -74,12 +74,9 @@ dmrg!(sysenv, params1, 1)
 
 Using such lower-level function, one can also restart the simulation at later times
 (e.g., by saving the `StateEnvs` using `Serialization.jl`), or one can perform
-[`updateH!`](@ref updateH!(sysenv::StateEnvs{ProjMPO}, H::MPO; recalcEnv::Bool = true)) to slowly
-change the Hamiltonian during DMRG simulations. Most often it is better to perform a 
+[`updateH!`](@ref updateH!(sysenv::StateEnvs{ProjMPO}, H::MPO; recalcEnv::Bool = true)) to slowly change the Hamiltonian during DMRG simulations. 
 
-
-Global Subspace Expansion can also be used to get rid of nasty local minimas (if needed), if the `StateEnvs` is
-built from a single MPO.
+Global Subspace Expansion can also be used to get rid of nasty local minimas (if needed), if (**and only if**) the `StateEnvs` is built from a single MPO.
 ```
 krylov_extend!(sysenv; extension_applyH_maxdim = 40)
 ```
