@@ -103,7 +103,7 @@ getenv(sysenv::StateEnvsTTN) = base.copy(sysenv.env)
     function position!(sysenv::StateEnvsTTN, node::Int2;
                        maxdim::Int = typemax(Int),
                        mindim::Int = 1,
-                       cutoff::Float64 = _Float64_Threshold,
+                       cutoff::Float64 = Float64_threshold(),
                        svd_alg::String = "divide_and_conquer",
                        normalize::Bool = true)
 
