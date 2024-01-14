@@ -42,7 +42,7 @@ getpsi(sysenv::StateEnvs) = Base.copy(sysenv.psi)
 
 Returns (shallow copy of) the environment `PH`.
 """
-getenv(sysenv::StateEnvs) = base.copy(sysenv.PH)
+getenv(sysenv::StateEnvs) = Base.copy(sysenv.PH)
 
 #################################################################################
 
