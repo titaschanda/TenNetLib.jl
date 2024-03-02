@@ -125,7 +125,7 @@ measure(::Type{T}, psi::MPS, opstr::String,
             measure(T, psi, op(opstr, siteind(psi, pos)))
 
 measure(psi::MPS, opstr::String, pos::Int) =
-    measure(ComplexF, psi, opstr, Int)
+    measure(ComplexF64, psi, opstr, Int)
 
 #################################################################################
 
