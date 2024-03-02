@@ -22,7 +22,7 @@ dmrg!(sysenv::StateEnvs, params::DMRGParams, nsite::Int; kwargs...)
 
 ## Higher level DMRG functions
 
-Standard two- and single-site DMRG functions. Single-site DMRG can increasing the bond-dimension
+Standard two- and single-site DMRG functions. Single-site DMRG can increase the bond-dimension
 if `noise > Float64_threshold()`.
 ```@docs
 dmrg2(psi0::MPS, H::T, params::DMRGParams; kwargs...) where T <: Union{MPO, Vector{MPO}, CouplingModel}

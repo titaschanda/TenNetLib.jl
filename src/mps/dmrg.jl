@@ -50,7 +50,7 @@ Base.copy(params::DMRGParams) = DMRGParams(Base.copy(params.maxdim),
 
 """
     function DMRGParams(;maxdim::Vector{Int}, nsweeps::Vector{Int}, 
-                        cutoff::Union{Vector{Float64}, Float64} = _Float64_Threshold,
+                        cutoff::Union{Vector{Float64}, Float64, Int} = _Float64_Threshold,
                         noise::Union{Vector{Float64}, Float64, Int} = 0.0,
                         noisedecay::Union{Vector{Float64}, Float64, Int} = 1.0,
                         disable_noise_after::Union{Vector{Int}, Int} = typemax(Int))
@@ -58,7 +58,7 @@ Base.copy(params::DMRGParams) = DMRGParams(Base.copy(params.maxdim),
 Constructor for `DMRGParams`. Takes only named arguments.
  - `maxdim::Vector{Int}`: Maximum allowed MPS bond/link dimensions at each stages of DMRG.
  - `nsweeps::Vector{Int}`: Number of sweeps to be performed at each statges of DMRG.
- - `cutoff::Union{Float64, Vector{Float64}} = Float64_threshold()`: Cutoff for SVD truncation
+ - `cutoff::Union{Int, Float64, Vector{Float64}} = Float64_threshold()`: Cutoff for SVD truncation
    at each stages of DMRG. If `Float64`, `cutoff` remains same throughout the DMRG simulation. 
  - `noise::Union{Float64, Int, Vector{Float64}} = 0.0`: Noise level at each stages of DMRG.
    If `Float64` or `Int`, initial `noise` remains same throughout the DMRG simulation.
@@ -70,7 +70,7 @@ Constructor for `DMRGParams`. Takes only named arguments.
    DMRG simulation.
 """
 function DMRGParams(;maxdim::Vector{Int}, nsweeps::Vector{Int}, 
-                    cutoff::Union{Vector{Float64}, Float64} = Float64_threshold(),
+                    cutoff::Union{Vector{Float64}, Float64, Int} = Float64_threshold(),
                     noise::Union{Vector{Float64}, Float64, Int} = 0.0,
                     noisedecay::Union{Vector{Float64}, Float64, Int} = 1.0,
                     disable_noise_after::Union{Vector{Int}, Int} = -1)
