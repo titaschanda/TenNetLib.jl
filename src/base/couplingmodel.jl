@@ -302,7 +302,7 @@ end
                            merge::Bool = true,
                            maxdim::Int = typemax(Int),
                            mindim::Int = 1,
-                           cutoff::Float64 = Float64_threashold(),
+                           cutoff::Float64 = Float64_threshold(),
                            svd_alg::String = "divide_and_conquer",
                            chunksize::Int = 12) where {T1 <: Number}
 
@@ -323,7 +323,7 @@ function CouplingModel(os::OpStrings{T1},
                        merge::Bool = true,
                        maxdim::Int = typemax(Int),
                        mindim::Int = 1,
-                       cutoff::Float64 = Float64_threashold(),
+                       cutoff::Float64 = Float64_threshold(),
                        svd_alg::String = "divide_and_conquer",
                        chunksize::Int = 12
                        )::CouplingModel where {T1 <: Number}

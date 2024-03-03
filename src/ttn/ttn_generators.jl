@@ -185,9 +185,9 @@ function randomTTN(sites::Vector{Index{T}}, graph::Graph{Int2},
         if !hastags(sites[b], "Site")
             error("""`randomTTN()`: Input site `Index` must have `tag="Site" !!""")
         end
-        if !hastags(sites[b], "n=$b")
-            error("""`randomTTN()`: Input site `Index` must have `tag="n=$b" !!""")
-        end 
+        #if !hastags(sites[b], "n=$b")
+        #    error("""`randomTTN()`: Input site `Index` must have `tag="n=$b" !!""")
+        #end 
     end
 
     if length(sitenodes) != numsites
