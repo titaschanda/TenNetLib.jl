@@ -59,7 +59,7 @@ Automatically handles situations where the number of sites is not a power of 2.
 graph, sitenodes = default_graph_sitenodes(32)
 
 sitenodes[1] == (1,1) # true
-sitenodes[2] == (1,1) # tru
+sitenodes[2] == (1,1) # true
 sitenodes[3] == (1,2) # true
 sitenodes[4] == (1,2) # true
 sitenodes[31] == (1,16) # true
@@ -185,9 +185,6 @@ function randomTTN(sites::Vector{Index{T}}, graph::Graph{Int2},
         if !hastags(sites[b], "Site")
             error("""`randomTTN()`: Input site `Index` must have `tag="Site" !!""")
         end
-        #if !hastags(sites[b], "n=$b")
-        #    error("""`randomTTN()`: Input site `Index` must have `tag="n=$b" !!""")
-        #end 
     end
 
     if length(sitenodes) != numsites
