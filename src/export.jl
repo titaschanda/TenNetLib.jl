@@ -32,6 +32,7 @@ export
     hasnode,
     addnode!,
     addedge!,
+    removeedge!,
     isneighbor,
     bfs,
     nodes_from_bfs,
@@ -172,6 +173,7 @@ export
     # ttn/helper_internal_funcs.jl
     
     # ttn/ttn_generators.jl
+    distribute_site_positions,
     default_graph_sitenodes,
     randomTTN,
     default_randomTTN,

@@ -151,6 +151,25 @@ end
 #################################################################################
 
 """
+    function removeedge!(graph::Graph{T}, node1::T, node2::T) where T
+
+Removes the edge between `node1` and `node2`. If `node1` or `node2` are not present in
+the `Graph`, throws an error. If the edge does not exist, nothing is changed.
+"""
+function removeedge!(graph::Graph{T}, node1::T, node2::T)::Nothing where T    
+    if !hasnode(graph, node1) || !hasnode(graph, node2)
+        error("`removeedge!()`: `node1=$node1` and/or `node2=$node2` do not exist in the graph !!")
+    end
+
+    delete!(graph[node1], node2)
+    delete!(graph[node2], node1)
+
+    return nothing
+end
+
+#################################################################################
+
+"""
     function isneighbor(graph::Graph{T}, node1::T, node2::T)::Bool where T
 
 Checks whether `node1` and `node2` are connected by an edge.
