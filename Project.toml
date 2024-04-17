@@ -11,7 +11,7 @@ Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
 DataStructures = "0.18"
-ITensors = "0.3.43"
+ITensors = "0.3.43, 0.4"
 LinearAlgebra = "1.7"
 Printf = "1.7"
 julia = "1.7"
