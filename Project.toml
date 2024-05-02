@@ -1,17 +1,19 @@
 name = "TenNetLib"
 uuid = "1ce00845-9e1b-4798-bd63-033d15ad4ca9"
 authors = ["Titas Chanda"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+NDTensors = "23ae76d9-e61a-49c4-8f12-3f1a16adf9cf"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
 DataStructures = "0.18"
-ITensors = "0.3.43"
+ITensors = "=0.3.57"
+NDTensors = "=0.2.28"
 LinearAlgebra = "1.7"
 Printf = "1.7"
 julia = "1.7"
