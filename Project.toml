@@ -12,9 +12,9 @@ Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [compat]
 DataStructures = "0.18"
-ITensors = "=0.3.57"
-NDTensors = "=0.2.28"
+ITensors = "=0.3.57, 0.6"
 LinearAlgebra = "1.7"
+NDTensors = "=0.2.28"
 Printf = "1.7"
 julia = "1.7"
 
