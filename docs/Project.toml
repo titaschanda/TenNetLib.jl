@@ -5,6 +5,7 @@ DocumenterTools = "35a29f4d-8980-5a13-9543-d66fff28ecb8"
 ITensorMPS = "0d1a4710-d33b-49a5-8f18-73bdf49b47e2"
 ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5"
 KrylovKit = "0b1a1467-8014-51b9-945f-bf0ae24f4b77"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 TenNetLib = "1ce00845-9e1b-4798-bd63-033d15ad4ca9"
 
 [compat]
