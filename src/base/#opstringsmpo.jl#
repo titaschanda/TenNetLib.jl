@@ -70,7 +70,7 @@ function _chunksum_mpoterms(mpoterms::Vector2{ITensor},
                                                   cutoff,
                                                   svd_alg)
         end
-                
+        
         return _chunksum_mpoterms(new_mpoterms,
                                   chunksize,
                                   maxdim,
@@ -103,13 +103,13 @@ Hamiltonian terms is large. Future updates will solve the problem.
  - `chunksize::Int = 12`. Maximum size of the chunks on which recursive SVDs are performed.
 """
 function ITensorMPS.MPO(os::OpStrings{T1},
-                      sites::Vector{Index{T2}};
-                      maxdim::Int = typemax(Int),
-                      mindim::Int = 1,
-                      cutoff::Float64 = Float64_threshold(),
-                      svd_alg::String = "divide_and_conquer",
-                      chunksize::Int = 12
-                      )::MPO where {T1 <: Number, T2}
+                        sites::Vector{Index{T2}};
+                        maxdim::Int = typemax(Int),
+                        mindim::Int = 1,
+                        cutoff::Float64 = Float64_threshold(),
+                        svd_alg::String = "divide_and_conquer",
+                        chunksize::Int = 12
+                        )::MPO where {T1 <: Number, T2}
     
     numsites::Int = length(sites)
     os = removeIdsZeros(os)

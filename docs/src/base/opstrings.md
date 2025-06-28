@@ -29,5 +29,5 @@ mergeterms(os::OpStrings{T}) where T <: Number
 
 ## `MPO` from `OpStrings`
 ```@docs
-ITensors.MPO(os::OpStrings{T1}, sites::Vector{Index{T2}}; maxdim::Int = typemax(Int), mindim::Int = 1, cutoff::Float64 = Float64_threashold(), svd_alg::String = "divide_and_conquer", chunksize::Int = 12) where {T1 <: Number, T2}
+ITensorMPS.MPO(os::OpStrings{T1}, sites::Vector{Index{T2}}; maxdim::Int = typemax(Int), mindim::Int = 1, cutoff::Float64 = Float64_threashold(), svd_alg::String = "divide_and_conquer", chunksize::Int = 12) where {T1 <: Number, T2}
 ```
