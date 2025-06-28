@@ -16,8 +16,9 @@ DataStructures = "0.18"
 ITensorMPS = "0.3"
 ITensors = "0.9"
 KrylovKit = "0.9"
-LinearAlgebra = "1"
-Printf = "1"
+LinearAlgebra = "1.10"
+Printf = "1.10"
+Julia = "1.10"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

@@ -10,7 +10,7 @@ The source code for TenNetLib.jl can be found on [**GitHub**](https://github.com
 
 The documentation for TenNetLib.jl can be found [**here**](https://titaschanda.github.io/TenNetLib.jl/dev/).
 
-This library requires Julia 1.7+.
+This library requires Julia 1.10+.
 
 ## Overview
 
