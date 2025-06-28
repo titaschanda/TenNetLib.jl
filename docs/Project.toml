@@ -10,4 +10,3 @@ TenNetLib = "1ce00845-9e1b-4798-bd63-033d15ad4ca9"
 
 [compat]
 Documenter = "1.2"
-

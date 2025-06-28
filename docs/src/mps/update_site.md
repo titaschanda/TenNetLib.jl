@@ -7,4 +7,3 @@ Skip this part if you want to avoid lower-level abstraction.
 ```@docs
 update_position!(sysenv::StateEnvs, solver, pos::Int, nsite::Int, ortho::String; kwargs...)
 ```
-

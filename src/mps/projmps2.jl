@@ -233,4 +233,3 @@ Compute the `Matrix-Vector` product between ProjMPS2 and input ITensor `v`.
 (P::ProjMPS2)(v::ITensor) = product(P, v)
 
 #################################################################################
-

@@ -235,4 +235,3 @@ function mergeterms(os::OpStrings{T})::OpStrings{T} where T <: Number
 end
 
 #################################################################################
-
