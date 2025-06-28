@@ -29,3 +29,4 @@ Base.:(==)(obj1::LinkTypeTTN, obj2::LinkTypeTTN) =
     (obj1.first == obj2.second && obj1.second == obj2.first)
 
 #################################################################################
+

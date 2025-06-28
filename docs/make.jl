@@ -69,3 +69,4 @@ deploydocs(;
   push_preview=true,
   deploy_config=Documenter.GitHubActions(),
 )
+
