@@ -2,8 +2,8 @@
 
 ```@docs
 TTN
-ITensors.siteinds(ttn::TTN)
-ITensors.siteind(ttn::TTN, n::Int)
+ITensorMPS.siteinds(ttn::TTN)
+ITensorMPS.siteind(ttn::TTN, n::Int)
 numsites(ttn::TTN)
 getgraph(ttn::TTN)
 Base.getindex(ttn::TTN, node::Int2)
@@ -12,13 +12,13 @@ orthocenter(ttn::TTN)
 Base.copy(ttn::TTN)
 isvalidnode(ttn::TTN, node::Int2)
 isneighbor(ttn::TTN, node1::Int2, node2::Int2)
-ITensors.findsite(ttn::TTN, is)
-ITensors.findsites(ttn::TTN, is)
+ITensorMPS.findsite(ttn::TTN, is)
+ITensorMPS.findsites(ttn::TTN, is)
 findnode(ttn::TTN, is)
 findnodes(ttn::TTN, is)
 find_sitenode(ttn::TTN, n::Int)
 find_sitenodes(ttn::TTN, ns)
-ITensors.maxlinkdim(ttn::TTN)
+ITensorMPS.maxlinkdim(ttn::TTN)
 LinearAlgebra.normalize!(ttn::TTN)
 ```
 

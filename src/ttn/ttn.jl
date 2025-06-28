@@ -33,7 +33,7 @@ end
 
 Returns the site `Index`s of the `TTN`.
 """
-ITensors.siteinds(ttn::TTN) = ttn.sites
+ITensorMPS.siteinds(ttn::TTN) = ttn.sites
 
 #################################################################################
 
@@ -42,7 +42,7 @@ ITensors.siteinds(ttn::TTN) = ttn.sites
 
 Returns the `n`th site `Index` of the `TTN`.
 """
-ITensors.siteind(ttn::TTN, n::Int) = ttn.sites[n]
+ITensorMPS.siteind(ttn::TTN, n::Int) = ttn.sites[n]
 
 #################################################################################
 
