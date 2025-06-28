@@ -64,7 +64,7 @@ if get(ENV, "GITHUB_EVENT_NAME", nothing) == "workflow_dispatch"
 end
 
 deploydocs(;
-  repo="https://x-access-token:${ENV["GITHUB_TOKEN"]}@github.com/titaschanda/TenNetLib.jl.git",
+  repo="github.com/titaschanda/TenNetLib.jl.git",
   devbranch="main",
   push_preview=true,
   deploy_config=Documenter.GitHubActions(),
