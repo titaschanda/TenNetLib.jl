@@ -1,4 +1,5 @@
 using ITensors
+using ITensorMPS
 using TenNetLib
 
 
@@ -21,7 +22,7 @@ function coupling_model(;qn = true)
 end
 
 
-function do_ttn_optimize(sites, H, psi0)
+function do_ttn_optimize(H, psi0)
     
     sweeppath = default_sweeppath(psi0)
     
@@ -34,7 +35,7 @@ function do_ttn_optimize(sites, H, psi0)
     return en, psi
 end
 
-function do_ttn_optimize_ex(sites, H, psi0, psi_gr)
+function do_ttn_optimize_ex(H, psi0, psi_gr)
 
     sweeppath = default_sweeppath(psi0)
     
@@ -50,7 +51,7 @@ end
 
 let
     sites, H, psi0 = coupling_model()
-    en, psi_gr = do_ttn_optimize(sites, H, psi0)
+    en, psi_gr = do_ttn_optimize(H, psi0)
 
     @show measure(psi_gr, "Sz")    
     @show measure(psi_gr, ["Sz" => 1, "Sz" => 10])
@@ -59,7 +60,7 @@ let
     @show measure(psi_gr, [op("Sz", s1), op("Sz", s10)])
     @show measure(psi_gr, [op("Sx", s1), op("Sx", s10)])
                     
-    en1, psi1 = do_ttn_optimize_ex(sites, H, psi0, psi_gr)
+    en1, psi1 = do_ttn_optimize_ex(H, psi0, psi_gr)
 end
     
     

@@ -102,7 +102,7 @@ Hamiltonian terms is large. Future updates will solve the problem.
  - `svd_alg::String = "divide_and_conquer"`.
  - `chunksize::Int = 12`. Maximum size of the chunks on which recursive SVDs are performed.
 """
-function ITensors.MPO(os::OpStrings{T1},
+function ITensorMPS.MPO(os::OpStrings{T1},
                       sites::Vector{Index{T2}};
                       maxdim::Int = typemax(Int),
                       mindim::Int = 1,

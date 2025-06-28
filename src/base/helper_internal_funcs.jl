@@ -11,10 +11,10 @@ gen_rand_id() = rand(ITensors.index_id_rng(), IDType)
 #################################################################################
 
 """
-    _divide_by_chunksize(vec::Vector{T}, size::Int)::Vector2{T} where T
+    _divide_by_chunksize(vec::Vector{T}, size::Int)
 
 Helper function to divide a vector by chunksize `size`. After the division,
-remaining elements are put in another vector.
+remaining elements are put in another vector. Returns a Vector2{T}.
 """
 function _divide_by_chunksize(vec::Vector{T}, size::Int)::Vector2{T} where T
     n = length(vec)
@@ -32,7 +32,7 @@ end
 #################################################################################
 
 """
-    _add_oplinks!(tensors::Vector{ITensor})::Nothing
+    _add_oplinks!(tensors::Vector{ITensor})
 
 Adds virtual links to the operator strings.
 """
@@ -66,7 +66,7 @@ end
     _directsum(ψ⃗::Vector2{ITensor})
 
 Internal function to perform directsum of vector of tensors (like summing MPS / MPO).
-Neighboringmtensors must have one shared index. Copied from ITensor.jl.
+Neighboring tensors must have one shared index. Copied from ITensor.jl.
 """
 function _directsum(ψ⃗::Vector2{ITensor})::Vector{ITensor}
     
@@ -133,10 +133,6 @@ function combineinds(inds::Vector{Index{QNBlocks}};
     if isnothing(maxdim) && isnothing(maxqnblocks)
         return combind
     else
-        #combblocks = QNBlocks()
-        #for block in space(combind)
-        #    push!(combblocks, block.first => block.second)
-        #end
         combblocks = space(combind)
 
         if !isnothing(maxqnblocks)
@@ -187,16 +183,7 @@ function indexintersection(inds1::Vector{Index{QNBlocks}},
     combind1 = combinedind(combiner(inds1))
     combind2 = combinedind(combiner(inds2))
 
-    #combblocks1 = QNBlocks()
-    #for block in space(combind1)
-    #    push!(combblocks1, block.first => block.second)
-    #end
     combblocks1 = space(combind1)
-    
-    #combblocks2 = QNBlocks()
-    #for block in space(combind2)
-    #    push!(combblocks2, block.first => block.second)
-    #end
     combblocks2 = space(combind2)
 
     sameQN(qn1::QN, qn2::QN) = dir(combind1) == dir(combind2) ?

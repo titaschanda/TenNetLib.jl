@@ -1,5 +1,6 @@
 
 using ITensors
+using ITensorMPS
 using TenNetLib
 
 
@@ -42,9 +43,9 @@ function mpo(;qn = true)
 end
 
 
-function dmrg_1(sites, H, psi0;
+function dmrg_1(H, psi0;
                 nsite = 1)
-   
+    
     sysenv = StateEnvs(psi0, H)
     params = DMRGParams(;nsweeps = [5], maxdim = [20],
                         cutoff = 1e-14, noise = 1e-3, noisedecay = 2,
@@ -54,7 +55,7 @@ function dmrg_1(sites, H, psi0;
 end
 
 
-function dmrg_2(sites, H, psi0;
+function dmrg_2(H, psi0;
                 nsite = 1)
     
     params = DMRGParams(;nsweeps = [5], maxdim = [20],
@@ -67,8 +68,8 @@ function dmrg_2(sites, H, psi0;
 end
 
 
-function dmrg_ex_1(sites, H, psi0, psi_gr;
-                                  nsite = 1)
+function dmrg_ex_1(H, psi0, psi_gr;
+                   nsite = 1)
 
     sysenv = StateEnvs(psi0, H, [psi_gr]; weight = 10.0)
     
@@ -83,8 +84,8 @@ end
 
 
 
-function dmrg_ex_2(sites, H, psi0, psi_gr;
-                                  nsite = 1)
+function dmrg_ex_2(H, psi0, psi_gr;
+                   nsite = 1)
     
     params = DMRGParams(;nsweeps = [5], maxdim = [20],
                         cutoff = 1e-14, noise = 1e-3, noisedecay = 2,
@@ -100,34 +101,34 @@ let
     sites, H, psi0 = coupling_model(; qn = true)
 
     for nsite in [1, 2]
-        @time en, psi_gr = dmrg_1(sites, H, psi0;
+        @time en, psi_gr = dmrg_1(H, psi0;
                                   nsite = nsite)
-      
-        @time en1, psi1 = dmrg_ex_1(sites, H, psi0, psi_gr;
+        
+        @time en1, psi1 = dmrg_ex_1(H, psi0, psi_gr;
                                     nsite = nsite)
     end
 
     for nsite in [1, 2]
-        @time en, psi_gr = dmrg_2(sites, H, psi0;
+        @time en, psi_gr = dmrg_2(H, psi0;
                                   nsite = nsite)
         
-        @time en1, psi1 = dmrg_ex_2(sites, H, psi0, psi_gr;
-                              nsite = nsite)
+        @time en1, psi1 = dmrg_ex_2(H, psi0, psi_gr;
+                                    nsite = nsite)
     end
 
     
     sites, H, psi0 = mpo(; qn = true)
 
     for nsite in [1, 2]
-        @time en, psi_gr = dmrg_1(sites, H, psi0;
+        @time en, psi_gr = dmrg_1(H, psi0;
                                   nsite = nsite)
 
-        @time en1, psi1 = dmrg_ex_1(sites, H, psi0, psi_gr;
+        @time en1, psi1 = dmrg_ex_1(H, psi0, psi_gr;
                                     nsite = nsite)
     end
 
     for nsite in [1, 2]
-        @time en, psi_gr = dmrg_2(sites, H, psi0;
+        @time en, psi_gr = dmrg_2(H, psi0;
                                   nsite = nsite)
 
         @show measure(psi_gr, "Sz")
@@ -137,7 +138,7 @@ let
         @show measure(psi_gr, [op("Sz", s1), op("Sz", s10)])
         @show measure(psi_gr, [op("Sx", s1), op("Sx", s10)])
         
-        @time en1, psi1 = dmrg_ex_2(sites, H, psi0, psi_gr;
+        @time en1, psi1 = dmrg_ex_2(H, psi0, psi_gr;
                                     nsite = nsite)
 
     end

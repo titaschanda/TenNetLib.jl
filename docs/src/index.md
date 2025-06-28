@@ -1,6 +1,6 @@
 # TenNetLib.jl
 
-A Tensor Network Library (TenNetLib.jl) built on top of [ITensors.jl](https://github.com/ITensor/ITensors.jl) for quantum many-body problems.
+A Tensor Network Library (TenNetLib.jl) built on top of [ITensors.jl](https://github.com/ITensor/ITensors.jl) and [ITensorMPS.jl](https://github.com/ITensor/ITensorMPS.jl) for quantum many-body problems.
 
 | **Build Status** | **Documentation** |
 |:----------------:|:-----------------:|
@@ -31,6 +31,8 @@ $ julia
 julia> ]
 
 pkg> add ITensors
+
+pkg> add ITensorMPS
 
 pkg> add TenNetLib
 ```
@@ -67,6 +69,7 @@ The following code is for a simple DMRG run at **the highest level of abstractio
 
 ```
 using ITensors
+using ITensorMPS
 using TenNetLib
 
 let
@@ -99,6 +102,7 @@ The following code is for a simple TDVP run at **the highest level of abstractio
 
 ```
 using ITensors
+using ITensorMPS
 using TenNetLib
 
 let
@@ -141,6 +145,7 @@ Here we use `OpStrings` and `CouplingModel` instead of `OpSum` and `MPO`.
 
 ```
 using ITensors
+using ITensorMPS
 using TenNetLib
 
 let
@@ -155,7 +160,7 @@ let
     end
     
     H = CouplingModel(os,sites)
-    psi0 = TTN(sites, 64, QN("Sz", 0))
+    psi0 = default_randomTTN(sites, 64, QN("Sz", 0))
 
     sweeppath = default_sweeppath(psi0)
     

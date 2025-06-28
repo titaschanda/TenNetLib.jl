@@ -8,6 +8,7 @@ with step `dt`, `time_step` should be `-im * dt`.
 
 ```
 using ITensors
+using ITensorMPS
 using TenNetLib
 
 let

@@ -1,6 +1,6 @@
 push!(LOAD_PATH,"../src/")
 
-using ITensors, DataStructures
+using ITensors, ITensorMPS, DataStructures, KrylovKit
 using Documenter, TenNetLib
 
 ############################################################################
@@ -44,7 +44,7 @@ settings = Dict(
         ],
     :format => Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
-        description = "A Tensor Network Library (TenNetLib.jl) built on top of ITensors.jl for quantum many-body problems.",
+        description = "A Tensor Network Library (TenNetLib.jl) built on top of ITensors.jl and ITensorMPS.jl for quantum many-body problems.",
         assets=["assets/favicon.ico"]),    
     :doctest => true,
     :checkdocs => :none,

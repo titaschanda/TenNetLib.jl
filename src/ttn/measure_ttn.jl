@@ -41,7 +41,7 @@ function measure(::Type{T}, psi::TTN,
 end
 
 measure(psi::TTN, opten::ITensor) = measure(ComplexF64, psi, opten)
-    
+
 #################################################################################
 
 """
@@ -57,7 +57,7 @@ measure(::Type{T}, psi::TTN, opstr::String,
             measure(T, psi, op(opstr, siteind(psi, pos)))
 
 measure(psi::TTN, opstr::String, pos::Int) =
-    measure(ComplexF, psi, opstr, Int)
+    measure(ComplexF64, psi, opstr, Int)
 
 #################################################################################
 

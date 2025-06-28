@@ -388,7 +388,7 @@ end
 
 #################################################################################
 
-function ITensors.noiseterm(P::ProjCouplingModel, phi::ITensor, ortho::String)::ITensor
+function ITensorMPS.noiseterm(P::ProjCouplingModel, phi::ITensor, ortho::String)::ITensor
     if nsite(P) != 2
         error("noise term only defined for 2-site ProjMPO")
     end

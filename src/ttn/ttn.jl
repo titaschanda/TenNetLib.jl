@@ -142,7 +142,7 @@ isneighbor(ttn::TTN, node1::Int2, node2::Int2)::Bool =
 Returns the first site of the TTN that has at least one `Index` in
 common with the `Index` or `ITensor` or their collection `is`.
 """
-ITensors.findsite(ttn::TTN, is) = findfirst(hascommoninds(is), ttn.sites)
+ITensorMPS.findsite(ttn::TTN, is) = findfirst(hascommoninds(is), ttn.sites)
 
 
 """
@@ -151,7 +151,7 @@ ITensors.findsite(ttn::TTN, is) = findfirst(hascommoninds(is), ttn.sites)
 Returns the sites of the TTN that have `Index`s in
 common with the `Index` or `ITensor` or their collection `is`.
 """
-ITensors.findsites(ttn::TTN, is) = findall(hascommoninds(is), ttn.sites)
+ITensorMPS.findsites(ttn::TTN, is) = findall(hascommoninds(is), ttn.sites)
 
 #################################################################################
 
@@ -196,7 +196,7 @@ find_sitenodes(ttn::TTN, ns) = map(x -> find_sitenode(ttn, x), ns)
 
 Returns the maximum bond/link dimension of the TTN.
 """
-function ITensors.maxlinkdim(ttn::TTN)
+function ITensorMPS.maxlinkdim(ttn::TTN)
     md = 1
     for node in ttn.graph.nodes
         l = filter(hastags("Link"), inds(ttn[node]))

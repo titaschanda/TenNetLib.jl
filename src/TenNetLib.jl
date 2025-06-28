@@ -5,6 +5,7 @@ module TenNetLib
 
 using Printf
 using ITensors
+using ITensorMPS
 using LinearAlgebra
 
 import DataStructures:
@@ -12,22 +13,30 @@ import DataStructures:
 
 
 import ITensors:
+    QNBlocks,    
+    scalartype,
+    OneITensor
+
+
+import KrylovKit:
+    eigsolve,
+    exponentiate
+
+
+import ITensorMPS:
     AbstractProjMPO,
     orthocenter,
     set_nsite!,
     position!,
     setleftlim!,
     setrightlim!,
-    eigsolve,
-    exponentiate,
     nsite,
-    OneITensor,
     site_range,
     truncate,
-    QNBlocks,
     rproj,
-    lproj,
-    scalartype
+    lproj
+
+
 
 ##*********** FILES *****************************
 

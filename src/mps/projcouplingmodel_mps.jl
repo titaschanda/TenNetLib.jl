@@ -124,7 +124,7 @@ end
 
 #################################################################################
 
-ITensors.noiseterm(P::ProjCouplingModel_MPS, phi::ITensor, ortho::String) =
+ITensorMPS.noiseterm(P::ProjCouplingModel_MPS, phi::ITensor, ortho::String) =
     noiseterm(P.PH, phi, ortho)
 
 #################################################################################

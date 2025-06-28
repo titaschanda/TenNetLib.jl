@@ -52,8 +52,8 @@ getenv(sysenv::StateEnvs) = Base.copy(sysenv.PH)
 Constructor of the `StateEnvs` from a single `MPO`.
 """
 function StateEnvs(psi::MPS, H::MPO)
-    ITensors.check_hascommoninds(siteinds, H, psi)
-    ITensors.check_hascommoninds(siteinds, H, psi')
+    ITensorMPS.check_hascommoninds(siteinds, H, psi)
+    ITensorMPS.check_hascommoninds(siteinds, H, psi')
     H = permute(H, (linkind, siteinds, linkind))
     PH = ProjMPO(H)
     return StateEnvs(copy(psi), PH)
@@ -69,8 +69,8 @@ Environments are contracted in parallel.
 """
 function StateEnvs(psi::MPS, Hs::Vector{MPO})
     for H in Hs
-        ITensors.check_hascommoninds(siteinds, H, psi)
-        ITensors.check_hascommoninds(siteinds, H, psi')
+        ITensorMPS.check_hascommoninds(siteinds, H, psi)
+        ITensorMPS.check_hascommoninds(siteinds, H, psi')
     end
     Hs .= permute.(Hs, Ref((linkind, siteinds, linkind)))
     PHS = ProjMPOSum2(Hs)
@@ -87,10 +87,10 @@ for excited state DMRG.
 """
 function StateEnvs(psi::MPS, H::MPO, Ms::Vector{MPS}; weight::Float64)
     
-    ITensors.check_hascommoninds(siteinds, H, psi)
-    ITensors.check_hascommoninds(siteinds, H, psi')
+    ITensorMPS.check_hascommoninds(siteinds, H, psi)
+    ITensorMPS.check_hascommoninds(siteinds, H, psi')
     for M in Ms
-        ITensors.check_hascommoninds(siteinds, M, psi)
+        ITensorMPS.check_hascommoninds(siteinds, M, psi)
     end
     H = permute(H, (linkind, siteinds, linkind))
     Ms .= permute.(Ms, Ref((linkind, siteinds, linkind)))
@@ -114,13 +114,13 @@ for excited state DMRG. Environments for `MPO`s are contracted in parallel.
 function StateEnvs(psi::MPS, Hs::Vector{MPO}, Ms::Vector{MPS}; weight::Float64)
 
     for H in Hs
-        ITensors.check_hascommoninds(siteinds, H, psi)
-        ITensors.check_hascommoninds(siteinds, H, psi')
+        ITensorMPS.check_hascommoninds(siteinds, H, psi)
+        ITensorMPS.check_hascommoninds(siteinds, H, psi')
     end
     Hs .= permute.(Hs, Ref((linkind, siteinds, linkind)))
 
     for M in Ms
-        ITensors.check_hascommoninds(siteinds, M, psi)
+        ITensorMPS.check_hascommoninds(siteinds, M, psi)
     end
     H = permute(H, (linkind, siteinds, linkind))
     Ms .= permute.(Ms, Ref((linkind, siteinds, linkind)))
@@ -181,8 +181,8 @@ it reuses previous environments.
 function updateH!(sysenv::StateEnvs{ProjMPO}, H::MPO; recalcEnv::Bool = true)
     
     if recalcEnv
-        ITensors.check_hascommoninds(siteinds, H, sysenv.psi)
-        ITensors.check_hascommoninds(siteinds, H, sysenv.psi')
+        ITensorMPS.check_hascommoninds(siteinds, H, sysenv.psi)
+        ITensorMPS.check_hascommoninds(siteinds, H, sysenv.psi')
         H = permute(H, (linkind, siteinds, linkind))
         PH = ProjMPO(H)
         sysenv.PH = PH
@@ -193,8 +193,8 @@ function updateH!(sysenv::StateEnvs{ProjMPO}, H::MPO; recalcEnv::Bool = true)
         if !isortho(sysenv.psi) || orthocenter(sysenv.psi) != 1
             orthogonalize!(sysenv.psi, 1)
         end
-        ITensors.check_hascommoninds(siteinds, H, sysenv.psi)
-        ITensors.check_hascommoninds(siteinds, H, sysenv.psi')
+        ITensorMPS.check_hascommoninds(siteinds, H, sysenv.psi)
+        ITensorMPS.check_hascommoninds(siteinds, H, sysenv.psi')
         H = permute(H, (linkind, siteinds, linkind))
         
         for ii = 1:length(H)    
@@ -218,8 +218,8 @@ function updateH!(sysenv::StateEnvs{ProjMPOSum2}, Hs::Vector{MPO}; recalcEnv::Bo
     
     if recalcEnv
         for H in Hs
-            ITensors.check_hascommoninds(siteinds, H, sysenv.psi)
-            ITensors.check_hascommoninds(siteinds, H, sysenv.psi')
+            ITensorMPS.check_hascommoninds(siteinds, H, sysenv.psi)
+            ITensorMPS.check_hascommoninds(siteinds, H, sysenv.psi')
         end
         Hs .= permute.(Hs, Ref((linkind, siteinds, linkind)))
         PHS = ProjMPOSum2(Hs)
@@ -242,10 +242,10 @@ function updateH!(sysenv::StateEnvs{ProjMPO_MPS2}, H::MPO, Ms::Vector{MPS};
                   weight::Float64, recalcEnv::Bool = true)
     
     if recalcEnv
-        ITensors.check_hascommoninds(siteinds, H, sysenv.psi)
-        ITensors.check_hascommoninds(siteinds, H, sysenv.psi')
+        ITensorMPS.check_hascommoninds(siteinds, H, sysenv.psi)
+        ITensorMPS.check_hascommoninds(siteinds, H, sysenv.psi')
         for M in Ms
-            ITensors.check_hascommoninds(siteinds, M, psi)
+            ITensorMPS.check_hascommoninds(siteinds, M, psi)
         end
         H = permute(H, (linkind, siteinds, linkind))
         Ms .= permute.(Ms, Ref((linkind, siteinds, linkind)))
@@ -277,13 +277,13 @@ function updateH!(sysenv::StateEnvs{ProjMPOSum_MPS}, H::Vector{MPO}, Ms::Vector{
     if recalcEnv
 
         for H in Hs
-            ITensors.check_hascommoninds(siteinds, H, psi)
-            ITensors.check_hascommoninds(siteinds, H, psi')
+            ITensorMPS.check_hascommoninds(siteinds, H, psi)
+            ITensorMPS.check_hascommoninds(siteinds, H, psi')
         end
         Hs .= permute.(Hs, Ref((linkind, siteinds, linkind)))
                 
         for M in Ms
-            ITensors.check_hascommoninds(siteinds, M, psi)
+            ITensorMPS.check_hascommoninds(siteinds, M, psi)
         end
         H = permute(H, (linkind, siteinds, linkind))
         Ms .= permute.(Ms, Ref((linkind, siteinds, linkind)))

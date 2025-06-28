@@ -6,6 +6,7 @@ A straight-forward TTN optimization can be performed as follows.
 
 ```
 using ITensors
+using ITensorMPS
 using TenNetLib
 
 let

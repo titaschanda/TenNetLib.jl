@@ -28,23 +28,23 @@ end
 #################################################################################
 
 """
-    const _using_threaded_loop = Ref{Bool}(true)
+    const _using_threaded_loop = Ref{Bool}(false)
 
 Holds the condition whether to use threaded loop.
 """
-const _using_threaded_loop = Ref{Bool}(true)
+const _using_threaded_loop = Ref{Bool}(false)
 
 """
     function using_threaded_loop()
 
-Returns the condition whether to use threaded loop in inbuild TeNLib functions.
+Returns the condition whether to use threaded loop in inbuild TenNetLib.jl functions.
 """
 using_threaded_loop() = _using_threaded_loop[]
 
 """
     function enable_threaded_loop()
 
-Enable the use of threaded loop in inbuild TeNLib functions.
+Enable the use of threaded loop in inbuild TenNetLib.jl functions.
 """
 function enable_threaded_loop()
     _using_threaded_loop[] = true
@@ -54,7 +54,7 @@ end
 """
     function disable_threaded_loop()
 
-Disable the use of threaded loop in inbuild TeNLib functions.
+Disable the use of threaded loop in inbuild TenNetLib.jl functions.
 """
 function disable_threaded_loop()
     _using_threaded_loop[] = false

@@ -127,7 +127,7 @@ end
 
 #################################################################################
 
-function ITensors.noiseterm(P::ProjMPOSum2, phi::ITensor, ortho::String)
+function ITensorMPS.noiseterm(P::ProjMPOSum2, phi::ITensor, ortho::String)
     nt = ITensor()
     using_threaded_loop() && (mutex = Threads.SpinLock())
     @threaded_loop for p in P.PHs
