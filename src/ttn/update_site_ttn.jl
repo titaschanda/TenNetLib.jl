@@ -88,7 +88,7 @@ function subspace_expand!(psi::TTN, node::Int2, nextnode::Int2,
     ind_padA = dag(ind_padB)
 
     ## padding B
-    padding_tensor_B = randomITensor(ind_padB, indsB)
+    padding_tensor_B = random_itensor(ind_padB, indsB)
     padding_tensor_B *= noise * norm(B) / norm(padding_tensor_B)
     enlargedB, sumindB = directsum(B => ind_to_update,
                                    padding_tensor_B => ind_padB;
@@ -97,7 +97,7 @@ function subspace_expand!(psi::TTN, node::Int2, nextnode::Int2,
     ##
 
     ## padding A
-    padding_tensor_A = randomITensor(ind_padA, indsA)
+    padding_tensor_A = random_itensor(ind_padA, indsA)
     padding_tensor_A *= noise * norm(A) / norm(padding_tensor_A)
     enlargedA, sumindA = directsum(A => dag(ind_to_update),
                                    padding_tensor_A => ind_padA)

@@ -87,7 +87,7 @@ end
                             sites::Vector{Index{T2}};
                             maxdim::Int = typemax(Int),
                             mindim::Int = 1,
-                            cutoff::Float64 = Float64_threshold(),
+                            cutoff::Float64 = Float64_threashold(),
                             svd_alg::String = "divide_and_conquer",
                             chunksize::Int = 12) where {T1 <: Number, T2}
 
@@ -106,7 +106,7 @@ function ITensorMPS.MPO(os::OpStrings{T1},
                       sites::Vector{Index{T2}};
                       maxdim::Int = typemax(Int),
                       mindim::Int = 1,
-                      cutoff::Float64 = Float64_threshold(),
+                      cutoff::Float64 = Float64_threashold(),
                       svd_alg::String = "divide_and_conquer",
                       chunksize::Int = 12
                       )::MPO where {T1 <: Number, T2}
