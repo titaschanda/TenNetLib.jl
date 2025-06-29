@@ -3,6 +3,8 @@
 
 """
     function gen_rand_id()
+using Base: diff_names
+using Base: diff_names
 
 Generates a random id.
 """
@@ -11,10 +13,10 @@ gen_rand_id() = rand(ITensors.index_id_rng(), IDType)
 #################################################################################
 
 """
-    _divide_by_chunksize(vec::Vector{T}, size::Int)
+    _divide_by_chunksize(vec::Vector{T}, size::Int) where T
 
 Helper function to divide a vector by chunksize `size`. After the division,
-remaining elements are put in another vector. Returns a Vector2{T}.
+remaining elements are put in another vector. Returns a `Vector2{T}`.
 """
 function _divide_by_chunksize(vec::Vector{T}, size::Int)::Vector2{T} where T
     n = length(vec)
@@ -141,9 +143,20 @@ function combineinds(inds::Vector{Index{QNBlocks}};
         end
 
         if !isnothing(maxdim)
-            blockdims::Vector{Int} = Int[x.second for x in combblocks]        
+            blockdims::Vector{Int} = Int[x.second for x in combblocks]
             if sum(blockdims) > maxdim
-                blockdims = Int.(round.(maxdim * (blockdims / sum(blockdims))))            
+                blockdims = Int.(round.(maxdim * (blockdims / sum(blockdims))))
+                blockdims = max.(1, blockdims)
+                diff = sum(blockdims) - maxdim
+                if diff > 0
+                    ord = sortperm(blockdims; rev=true)
+                    for ii in 1:diff
+                        if blockdims[ord[ii]] > 1
+                            blockdims[ord[ii]] -= 1
+                        end
+                    end
+                end
+                
                 for ii = 1 : length(combblocks)           
                     combblocks[ii] = combblocks[ii].first => blockdims[ii]
                 end
@@ -182,13 +195,13 @@ function indexintersection(inds1::Vector{Index{QNBlocks}},
     
     combind1 = combinedind(combiner(inds1))
     combind2 = combinedind(combiner(inds2))
-
+    
     combblocks1 = space(combind1)
     combblocks2 = space(combind2)
 
     sameQN(qn1::QN, qn2::QN) = dir(combind1) == dir(combind2) ?
         qn1 == qn2 : qn1 + qn2 == QN()
-            
+    
     newblocks = QNBlocks()
     for block in combblocks1
         loc = findall(x -> sameQN(block.first, x.first), combblocks2)        
@@ -214,6 +227,16 @@ function indexintersection(inds1::Vector{Index{QNBlocks}},
         
         if sum(blockdims) > maxdim
             blockdims = Int.(round.(maxdim * (blockdims / sum(blockdims))))
+            blockdims = max.(1, blockdims)
+            diff = sum(blockdims) - maxdim
+            if diff > 0
+                ord = sortperm(blockdims; rev=true)
+                for ii in 1:diff
+                    if blockdims[ord[ii]] > 1
+                        blockdims[ord[ii]] -= 1
+                    end
+                end
+            end
             for ii = 1 : length(newblocks)           
                 newblocks[ii] = newblocks[ii].first => blockdims[ii]
             end

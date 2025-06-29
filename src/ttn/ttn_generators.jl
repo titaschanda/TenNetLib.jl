@@ -112,7 +112,18 @@ function _ttn_ind_reducedim!(graph::Graph{Int2}, inds::Dict{Int2, Vector{Index{Q
         
             if sum(blockdims) > maxdim
                 blockdims = Int.(round.(maxdim * (blockdims / sum(blockdims))))
-                for ii = 1 : length(qnblocks)           
+                blockdims = max.(1, blockdims)
+                diff = sum(blockdims) - maxdim
+                if diff > 0
+                   ord = sortperm(blockdims; rev=true)
+                    for ii in 1:diff
+                        if blockdims[ord[ii]] > 1
+                            blockdims[ord[ii]] -= 1
+                        end
+                    end
+                end
+                
+                for ii = 1 : length(qnblocks)
                     qnblocks[ii] = qnblocks[ii].first => blockdims[ii]
                 end
                 qnblocks = filter(x -> x.second > 0, qnblocks)
@@ -178,7 +189,8 @@ The structure is determined by the input `graph` object.
 **Note**: For QN conserving TTN, the bond dimension might be off by one or two from `chi`.
 """
 function randomTTN(sites::Vector{Index{T}}, graph::Graph{Int2},
-                   sitenodes::Dict{Int, Int2}, chi::Int, qn::QN = QN()) where T
+                   sitenodes::Dict{Int, Int2}, chi::Int, qn::QN = QN();
+                   numclean = 50) where T
     
     numsites = length(sites)
     for b = 1 : numsites
@@ -228,19 +240,21 @@ function randomTTN(sites::Vector{Index{T}}, graph::Graph{Int2},
     
     if hasqns(sites)
         qnindex = Index(qn => 1; tags = "QN", dir = ITensors.In)
-        push!(inds[center_node], qnindex)        
-        _ttn_ind_cleanup!(graph, inds, center_node, qnindex)
-        _ttn_ind_reducedim!(graph, inds, chi)
+        push!(inds[center_node], qnindex)
+        for dummy in 1:numclean
+            _ttn_ind_cleanup!(graph, inds, center_node, qnindex)
+            _ttn_ind_reducedim!(graph, inds, (numclean*chi)÷dummy)
+        end
     end
     
     tensors = Dict{Int2, ITensor}()
     for node in graph.nodes
-        tensors[node] = randomITensor(inds[node])
+        tensors[node] = random_itensor(inds[node])
         normalize!(tensors[node])
     end
 
     ttn = TTN(sites, graph, tensors, Int2())
-    isometrize_full!(ttn, center_node; normalize=true, cutoff=0.0)
+    isometrize_full!(ttn, center_node; normalize=true, cutoff=0.0, maxdim=chi)
     return ttn
 end
 
@@ -256,11 +270,12 @@ tree graph. Automatically handles situations where the number of sites is not a 
 
 **Note**: For QN conserving TTN, the bond dimension might be off by one or two from `chi`.
 """
-function default_randomTTN(sites::Vector{Index{T}}, chi::Int, qn::QN = QN()) where T
+function default_randomTTN(sites::Vector{Index{T}}, chi::Int, qn::QN = QN();
+                           numclean = 50) where T
     
     numsites = length(sites)
     graph, sitenodes = default_graph_sitenodes(numsites)
-    return randomTTN(sites, graph, sitenodes, chi, qn)
+    return randomTTN(sites, graph, sitenodes, chi, qn; numclean)
 end
 
 #################################################################################

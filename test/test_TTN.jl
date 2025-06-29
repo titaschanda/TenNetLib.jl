@@ -5,7 +5,7 @@ using TenNetLib
 
 function coupling_model(;qn = true)
     
-    N = 32
+    N = 12
     sites = siteinds("S=1/2",N; conserve_qns = qn)
     os = OpStrings()
     

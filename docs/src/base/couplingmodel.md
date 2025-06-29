@@ -13,5 +13,5 @@ CouplingModel(mpos::MPO...)
 Base.length(model::CouplingModel)
 Base.copy(model::CouplingModel)
 Base.getindex(model::CouplingModel, n)
-ITensors.siteinds(model::CouplingModel)
+ITensorMPS.siteinds(model::CouplingModel)
 ```

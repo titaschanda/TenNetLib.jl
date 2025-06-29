@@ -2,13 +2,13 @@
 #################################################################################
 
 """
-    struct CouplingModel{T}
-        sites::Vector{Index{T}}
+    struct CouplingModel
+        sites::Vector{Index}
         terms::Vector{IDTensors}
     end
 
 `CouplingModel` for a given `OpStrings` Hamiltonian terms and `sites::Vector{Index}`.
- - `sites::Vector{Index{T}}`: Site `Index`s.
+ - `sites::Vector{Index}`: Site `Index`s.
  - `terms::Vector{IDTensors}`: Collection of Hamiltonian terms. 
 """
 struct CouplingModel{T}
@@ -46,11 +46,11 @@ Base.getindex(model::CouplingModel, n) = model.terms[n]
 #################################################################################
 
 """
-    function ITensors.siteinds(model::CouplingModel)
+    function ITensorMPS.siteinds(model::CouplingModel)
 
 Returns the site `Index`s of the `CouplingModel`.
 """
-ITensors.siteinds(model::CouplingModel) = model.sites
+ITensorMPS.siteinds(model::CouplingModel) = model.sites
 
 #################################################################################
 """
@@ -59,7 +59,7 @@ ITensors.siteinds(model::CouplingModel) = model.sites
                        maxdim::Int,
                        mindim::Int,
                        cutoff::Float64,
-                       svd_alg::String)::Vector{ITensor}
+                       svd_alg::String)
 
 Internal helper function to iteratively sum and compress CouplingModel terms.
 """
@@ -243,14 +243,14 @@ end
 #################################################################################
 
 """
-    function CouplingModel(os::OpStrings{T1},
-                           sites::Vector{Index{T2}};
+    function CouplingModel(os::OpStrings,
+                           sites::Vector{Index};
                            merge::Bool = true,
                            maxdim::Int = typemax(Int),
                            mindim::Int = 1,
-                           cutoff::Float64 = Float64_threashold(),
+                           cutoff::Float64 = Float64_threshold(),
                            svd_alg::String = "divide_and_conquer",
-                           chunksize::Int = 12) where {T1 <: Number, T2}
+                           chunksize::Int = 12)
 
 Constructor of the `CouplingModel` from `os::OpStrings` and `sites::Vector{Index}`.
 
@@ -297,14 +297,14 @@ end
 #################################################################################
 
 """
-    function CouplingModel(os::OpStrings{T1},
+    function CouplingModel(os::OpStrings,
                            mpo::MPO;
                            merge::Bool = true,
                            maxdim::Int = typemax(Int),
                            mindim::Int = 1,
                            cutoff::Float64 = Float64_threshold(),
                            svd_alg::String = "divide_and_conquer",
-                           chunksize::Int = 12) where {T1 <: Number}
+                           chunksize::Int = 12)
 
 Constructor of the `CouplingModel` from `os::OpStrings` and `mpo::MPO`.
 Resultant `CouplingModel` is the sum of `os` and the `mpo`.
@@ -353,8 +353,8 @@ end
 """
     function CouplingModel(mpos::MPO...)
 
-Constructs `CouplingModel` from a collection of `MPO`s. Different MPO terms are contracted
-in parallel. Useful for TTN codes.
+Constructs `CouplingModel` from a collection of `MPO`s. Different MPO terms can be contracted
+in parallel during different MPS/TTN algorithms. Useful for TTN codes.
 """
 function CouplingModel(mpos::MPO...)::CouplingModel
 

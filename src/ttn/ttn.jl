@@ -289,7 +289,7 @@ function moveisometry_to_next!(ttn::TTN, node1::Int2, node2::Int2; kwargs...)
     uinds = uniqueinds(A, B)
     tag = tags(comind)
 
-    if cutoff > 0.0 && dim(comind) > maxdim
+    if cutoff > 0.0 || dim(comind) > maxdim
         U, S, V = svd(A, uinds;
                       maxdim = maxdim,
                       mindim = mindim,

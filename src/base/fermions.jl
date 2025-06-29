@@ -14,7 +14,7 @@ end
 
 """
     function bosonize(oppair::Vector{Pair{String, Int}},
-                      sites::Vector{Index{T}})
+                      sites::Vector{Index})
 
 Given a string of operator names with positions in the form of `Vector{Pair{String, Int}}`
 "bosonizes" the operator string by putting the Jordan-Wigner string "F" at appropriate places.

@@ -1,6 +1,6 @@
 # `StateEnvsTTN`: A container to store the TTN and its environments
 
-Similar to the setup for MPS, tt the lowest-level of abstraction, TenNetLib.jl defines
+Similar to the setup for MPS, at the lowest-level of abstraction, TenNetLib.jl defines
 `StateEnvs` to hold a TTN and its environments to be modified in place.
 
 Skip this part if you want to avoid lower-level abstraction.

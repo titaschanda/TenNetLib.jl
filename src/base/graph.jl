@@ -191,7 +191,7 @@ end
                  source::T,
                  destination::Union{Nothing, T} = nothing) where T
 
-Performs a full BFS starting from the node `source` (and optionally, to the `destination`).
+Performs a BFS starting from the node `source` (and optionally, to the `destination`).
 
 #### Return values
  - `::Dict{T, Int}`: Distances of nodes (key) in the BFS path.
@@ -204,23 +204,19 @@ function bfs(graph::Graph{T},
 
     q = Deque{T}()
     push!(q, source)    
-    #visited = Dict{T, Bool}()
     visited = Set{T}()
     parents = Dict{T, T}()
     distances = Dict{T, Int}()
     distances[source] = 0
 
-    #visited[source] = true     
     push!(visited, source)
     
     while !isempty(q)
         node = first(q)
         popfirst!(q)        
         for neighbor in graph[node]
-            #if !haskey(visited, neighbor) || !visited[neighbor]
             if !(neighbor in visited)
                 push!(q, neighbor)
-                #visited[neighbor] = true
                 push!(visited, neighbor)
                 distances[neighbor] = distances[node] + 1
                 parents[neighbor] = node

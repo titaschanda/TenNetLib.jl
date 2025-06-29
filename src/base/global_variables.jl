@@ -4,7 +4,7 @@
 """
     const _Float64_threshold = Ref{Float64}(1e-15)
 
-Holds threshold for floating point calculations. In most places, any number below this will be
+Holds threshold for floating point calculations. In most cases, any number below this will be
 treated zero. E.g., in `cutoff`.
 """
 const _Float64_threshold = Ref{Float64}(1e-15)
@@ -13,7 +13,7 @@ const _Float64_threshold = Ref{Float64}(1e-15)
     function Float64_threshold()
     function Float64_threshold(threshold::Float)
 
-Returns threshold for floating point calculations. In most places, any number below this will be
+Returns threshold for floating point calculations. In most cases, any number below this will be
 treated zero. E.g., in `cutoff`. Default: `1e-15`.
 
 Optionally, change the threshold as per the input `threshold`.
@@ -36,29 +36,17 @@ const _using_threaded_loop = Ref{Bool}(false)
 
 """
     function using_threaded_loop()
+    function using_threaded_loop(condition::Bool)
 
 Returns the condition whether to use threaded loop in inbuild TenNetLib.jl functions.
+
+Optionally, change the condition as per the input `condition`.
 """
 using_threaded_loop() = _using_threaded_loop[]
 
-"""
-    function enable_threaded_loop()
-
-Enable the use of threaded loop in inbuild TenNetLib.jl functions.
-"""
-function enable_threaded_loop()
-    _using_threaded_loop[] = true
-    return nothing
-end
-
-"""
-    function disable_threaded_loop()
-
-Disable the use of threaded loop in inbuild TenNetLib.jl functions.
-"""
-function disable_threaded_loop()
-    _using_threaded_loop[] = false
-    return nothing
+function using_threaded_loop(condition::Bool)
+    _using_threaded_loop[] = condition
+    return _using_threaded_loop[]
 end
 
 #################################################################################
