@@ -182,8 +182,7 @@ function fullsweep!(sysenv::StateEnvsTTN, sweeppath::Vector{Int2}, solver,
         sw_time = @elapsed begin
             central_node = find_eccentric_central_node(sysenv.psi.graph)
             for ii in [1 : length(sweeppath); length(sweeppath):-1:1]
-            #for ii in 1 : length(sweeppath)
-            
+                            
                 node = sweeppath[ii]
 
                 if node == central_node
@@ -223,7 +222,8 @@ function fullsweep!(sysenv::StateEnvsTTN, sweeppath::Vector{Int2}, solver,
                 
                     for dummy = 1 : expand_numiter
                         newmaxdim = dummy == expand_numiter ?
-                            linkmaxdim : linkmaxdim + expand_dim
+                            linkmaxdim : (dummy == 1 ?
+                            linkmaxdim + max_expand_dim : linkmaxdim + expand_dim)
                         newnode = dummy % 2 == 1 ? node : nextnode
 
                         energy =  update_position!(sysenv, solver, newnode;

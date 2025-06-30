@@ -19,8 +19,7 @@ Moves the orthogonality center to `pos` and update StateEnvsTTN at position `pos
  - `pos::Int`: Position of the node to be updated.
 
 #### Named arguments and their default values:
- - `time_step::Union{Float64, ComplexF64, Nothing} = nothing`: Time step for future
-   functionality.
+ - `time_step::Union{Float64, ComplexF64, Nothing} = nothing`: Time step for future functionality.
  - `normalize::Bool = true`: Whether to normalize after update.
  - `maxdim::Int = typemax(Int)`: Maximum bond dimension after SVD truncation.
  - `mindim::Int = 1`: Minimum bond dimension after SVD truncation.
@@ -55,6 +54,7 @@ function update_position!(sysenv::StateEnvsTTN, solver, node::Int2;
               mindim=mindim,
               cutoff=cutoff,
               svd_alg=svd_alg)
+
     phi = sysenv.psi[node]
     
     energy, phi = solver(sysenv, phi, time_step; kwargs...)
