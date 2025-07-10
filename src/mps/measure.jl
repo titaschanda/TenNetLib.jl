@@ -150,7 +150,7 @@ end
 """
     bond_spectrum(psi::MPS; bonds = nothing, by_charge = false)
 
-Compute the eigenvalue spectra ``\\{ \\lambda_k \\}`` of the reduced density matrix obtained by
+Compute the eigenvalue spectra ``\\{ \\lambda_k \\}`` of the reduced density matricies obtained by
 cutting the MPS `psi` at all the bonds.
 
 Optionally, for specific bonds, keyword argument `bonds` can be specified, e.g.,
