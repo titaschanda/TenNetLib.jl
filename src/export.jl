@@ -5,8 +5,6 @@ export
     # base/global_variables.jl
     Float64_threshold,
     using_threaded_loop,
-    enable_threaded_loop,
-    disable_threaded_loop,
     @threaded_loop,
 
     # base/typedef.jl
@@ -115,7 +113,7 @@ export
     updateH!,
     product,
 
-    # base/update_site.jl
+    # mps/update_site.jl
     update_position!,
     
     # mps/sweep.jl
@@ -147,6 +145,7 @@ export
     # mps/measure.jl
     shannon_entropy,
     entropy,
+    bond_spectrum,
     measure,
 
 
@@ -173,7 +172,6 @@ export
     # ttn/helper_internal_funcs.jl
     
     # ttn/ttn_generators.jl
-    distribute_site_positions,
     default_graph_sitenodes,
     randomTTN,
     default_randomTTN,

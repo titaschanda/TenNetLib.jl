@@ -29,10 +29,15 @@ end
 """
     function entropy(psi::MPS, bond::Int)
 
-Compute von Neumann Entropy of a given MPS `psi` at `bond`.
+Compute von Neumann entropy of a given MPS `psi` at `bond`.
+
+**Note:** Since both ITensors.jl and ITensorMPS.jl export a function named
+`entropy()`, this function must be explicitly called as `TenNetLib.entropy().`
 """
 function entropy(psi::MPS, bond::Int)::Float64
 
+    @assert bond > 0 && bond < length(psi)
+    
     orthogonalize!(psi, bond)
     inds = uniqueinds(psi[bond], psi[bond+1])
     _, _, _, spec = svd(psi[bond], inds)
@@ -56,17 +61,114 @@ end
 #################################################################################
 
 """
-    function entropy(psi::MPS; kwargs...)
+    function entropy(psi::MPS; bonds = nothing)
 
-Compute von Neumann Entropies of a given MPS `psi` at all the bonds.
+Compute von Neumann entropies of a given MPS `psi` at all the bonds.
 
 Optionally, for specific bonds, keyword argument `bonds` can be specified, e.g.,
 `bonds = [1, 2, 3]`.
+
+**Note:** Since both ITensors.jl and ITensorMPS.jl export a function named
+`entropy()`, this function must be explicitly called as `TenNetLib.entropy().`
 """
-function entropy(psi::MPS; kwargs...)::Vector{Float64}
-    N = length(psi)
-    bonds = get(kwargs, :bonds, 1:N-1)
-    return map(bond -> entropy(psi, bond), bonds)
+function entropy(psi::MPS; bonds::Union{Nothing, Vector{Int}} = nothing)::Vector{Float64}
+    N = length(psi)    
+    bonds_to_evaluate = isnothing(bonds) ? collect(1:N-1) : bonds 
+    return map(bond -> entropy(psi, bond), bonds_to_evaluate)
+end
+
+#################################################################################
+
+function _bond_spectrum(psi::MPS, bond::Int)::Vector{Float64}
+
+    @assert bond > 0 && bond < length(psi)
+    
+    orthogonalize!(psi, bond)
+    inds = uniqueinds(psi[bond], psi[bond+1])
+    _, _, _, spec = svd(psi[bond], inds)
+
+    eigs = spec.eigs
+    if abs(sum(eigs) - 1.0) > 100 * Float64_threshold()
+        @warn string("WARNING !! `bond_spectrum()` :: Input state does not have unit norm !!",
+                     "Normalizing the eigenvalues !!")
+        eigs /= sum(eigs)
+    end    
+    return eigs
+end
+
+function _bond_spectrum_by_charge(psi::MPS, bond::Int)::Vector{Pair{QN, Vector{Float64}}}
+
+    @assert bond > 0 && bond < length(psi)
+
+    orthogonalize!(psi, bond)
+    inds = uniqueinds(psi[bond], psi[bond+1])
+    _, S, _, spec, u, v = svd(psi[bond], inds)
+
+    if !hasqns(u)
+        error("`bond_spectrum()`: `by_charge` cannot be `true` for dense MPS !!")
+    end
+    
+    eigs = spec.eigs
+    if abs(sum(eigs) - 1.0) > 100 * Float64_threshold()
+        @warn string("WARNING !! `bond_spectrum()` :: Input state does not have unit norm !!",
+                     "Normalizing the eigenvalues !!")
+        S /= sqrt(sum(eigs))
+    end
+
+    ret::Vector{Pair{QN, Vector{Float64}}} = []
+    for ii in 1:length(space(v))
+        jj = findfirst(b -> first(b) + first(space(v)[ii]) == QN(), space(u))
+
+        qn = dir(v) == ITensors.Out ? first(space(v)[ii]) : QN() - first(space(v)[ii])
+        push!(ret, qn => diag(S[Block(jj, ii)]).^2)
+    end    
+    return ret
+end
+
+
+"""
+    bond_spectrum(psi::MPS, bond::Int; by_charge = false)
+
+Compute the eigenvalue spectrum ``\\{ \\lambda_k \\}`` of the reduced density matrix obtained by
+cutting the MPS `psi` at the specified `bond`.
+
+If `by_charge == false`, the function returns the full spectrum as a `Vector{Float64}`.
+
+If `by_charge == true`, the spectrum is grouped into different QN sectors, and the result is
+returned as a `Vector{Pair{QN, Vector{Float64}}}`, where each pair contains a QN label and its
+associated eigenvalue spectrum.
+"""
+function bond_spectrum(psi::MPS, bond::Int; by_charge = false)
+    if by_charge == false
+        return _bond_spectrum(psi, bond)
+    else
+        return _bond_spectrum_by_charge(psi, bond)
+    end
+end
+
+
+"""
+    bond_spectrum(psi::MPS; bonds = nothing, by_charge = false)
+
+Compute the eigenvalue spectra ``\\{ \\lambda_k \\}`` of the reduced density matrix obtained by
+cutting the MPS `psi` at all the bonds.
+
+Optionally, for specific bonds, keyword argument `bonds` can be specified, e.g.,
+`bonds = [1, 2, 3]`.
+
+
+Returns a vector of spectra, one for each bonds. The type depends on `by_charge`.
+
+If `by_charge == false`, the function returns the full spectrum as a `Vector{Vector{Float64}}`.
+
+If `by_charge == true`, the spectrum is grouped into different QN sectors, and the result is
+returned as a `Vector{Vector{Pair{QN, Vector{Float64}}}}`, where each pair contains a QN label and its
+associated eigenvalue spectrum.
+"""
+function bond_spectrum(psi::MPS; bonds::Union{Nothing, Vector{Int}} = nothing, by_charge = false)
+    N = length(psi)    
+    bonds_to_evaluate = isnothing(bonds) ? collect(1:N-1) : bonds
+    return map(bond -> bond_spectrum(psi, bond; by_charge), bonds_to_evaluate)
 end
 
 #################################################################################
@@ -239,7 +341,7 @@ end
 
 measure(psi::MPS, optens::Vector{ITensor}) =
     measure(ComplexF64, psi, optens)
-    
+
 #################################################################################
 
 """
