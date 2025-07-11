@@ -190,7 +190,7 @@ Update Hamiltonian `H` in `engine::TDVPEngine`. `recalcEnv = false` is not suppo
 updateH!(engine::TDVPEngine, H::T, Ms::Vector{MPS};
          weight::Float64,
          recalcEnv::Bool = true) where T <: Union{MPO, Vector{MPO}, CouplingModel} =
-             updateH!(sysenv, H, Ms; weight, recalcEnv)
+             updateH!(engine.sysenv, H, Ms; weight, recalcEnv)
 
 #################################################################################
 
