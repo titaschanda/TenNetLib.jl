@@ -1,17 +1,12 @@
 
 #################################################################################
 
-"""
-    function shanon_entropy(p::Vector{Float64})
-
-Compute Shannon Entropy of a given vector `p`.
-"""
-function shannon_entropy(p::Vector{Float64})::Float64
+function _entropy(p::Vector{Float64})::Float64
 
     norm = sum(p)
     if abs(norm - 1.0) > 100 * Float64_threshold()
-        @warn string("WARNING !! `shannon_entropy()` :: Input vector does not have unit norm !!",
-                     "Normalizing the input vector !!")
+        @warn string("WARNING !! `entropy()` :: Input state does not have unit norm !!",
+                     "Normalizing the eigenvalues !!")
         p /= norm
     end
 
@@ -26,6 +21,42 @@ end
 
 #################################################################################
 
+function _bond_spectrum(psi::MPS, bond::Int)::Vector{Float64}
+
+    @assert bond > 0 && bond < length(psi)
+    
+    orthogonalize!(psi, bond)
+    inds = uniqueinds(psi[bond], psi[bond+1])
+    _, _, _, spec = svd(psi[bond], inds)
+
+    return spec.eigs
+end
+
+function _bond_spectrum_by_charge(psi::MPS, bond::Int)::Vector{Pair{QN, Vector{Float64}}}
+
+    @assert bond > 0 && bond < length(psi)
+
+    orthogonalize!(psi, bond)
+    inds = uniqueinds(psi[bond], psi[bond+1])
+    _, S, _, _, u, v = svd(psi[bond], inds)
+
+    if !hasqns(u)
+        error("`bond_spectrum()`: `by_charge` cannot be `true` for QN non-conserving MPS !!")
+    end
+
+    ret::Vector{Pair{QN, Vector{Float64}}} = []
+    for ii in 1:length(space(v))
+        jj = findfirst(b -> first(b) + first(space(v)[ii]) == QN(), space(u))
+
+        qn = dir(v) == ITensors.Out ? first(space(v)[ii]) : QN() - first(space(v)[ii])
+        push!(ret, qn => diag(S[Block(jj, ii)]).^2)
+    end    
+    return ret
+end
+
+
+#################################################################################
+
 """
     function entropy(psi::MPS, bond::Int)
 
@@ -35,27 +66,8 @@ Compute von Neumann entropy of a given MPS `psi` at `bond`.
 `entropy()`, this function must be explicitly called as `TenNetLib.entropy().`
 """
 function entropy(psi::MPS, bond::Int)::Float64
-
-    @assert bond > 0 && bond < length(psi)
-    
-    orthogonalize!(psi, bond)
-    inds = uniqueinds(psi[bond], psi[bond+1])
-    _, _, _, spec = svd(psi[bond], inds)
-
-    eigs = spec.eigs
-    if abs(sum(eigs) - 1.0) > 100 * Float64_threshold()
-        @warn string("WARNING !! `entropy()` :: Input state does not have unit norm !!",
-                     "Normalizing the eigenvalues !!")
-        eigs /= sum(eigs)
-    end
-    
-    S::Float64 = 0.0
-    for a in eigs
-        if a > 0.0
-            S += -a * log(a)
-        end
-    end
-    return S
+    eigs = _bond_spectrum(psi, bond)
+    return _entropy(eigs)
 end
 
 #################################################################################
@@ -79,53 +91,6 @@ end
 
 #################################################################################
 
-function _bond_spectrum(psi::MPS, bond::Int)::Vector{Float64}
-
-    @assert bond > 0 && bond < length(psi)
-    
-    orthogonalize!(psi, bond)
-    inds = uniqueinds(psi[bond], psi[bond+1])
-    _, _, _, spec = svd(psi[bond], inds)
-
-    eigs = spec.eigs
-    if abs(sum(eigs) - 1.0) > 100 * Float64_threshold()
-        @warn string("WARNING !! `bond_spectrum()` :: Input state does not have unit norm !!",
-                     "Normalizing the eigenvalues !!")
-        eigs /= sum(eigs)
-    end    
-    return eigs
-end
-
-function _bond_spectrum_by_charge(psi::MPS, bond::Int)::Vector{Pair{QN, Vector{Float64}}}
-
-    @assert bond > 0 && bond < length(psi)
-
-    orthogonalize!(psi, bond)
-    inds = uniqueinds(psi[bond], psi[bond+1])
-    _, S, _, spec, u, v = svd(psi[bond], inds)
-
-    if !hasqns(u)
-        error("`bond_spectrum()`: `by_charge` cannot be `true` for dense MPS !!")
-    end
-    
-    eigs = spec.eigs
-    if abs(sum(eigs) - 1.0) > 100 * Float64_threshold()
-        @warn string("WARNING !! `bond_spectrum()` :: Input state does not have unit norm !!",
-                     "Normalizing the eigenvalues !!")
-        S /= sqrt(sum(eigs))
-    end
-
-    ret::Vector{Pair{QN, Vector{Float64}}} = []
-    for ii in 1:length(space(v))
-        jj = findfirst(b -> first(b) + first(space(v)[ii]) == QN(), space(u))
-
-        qn = dir(v) == ITensors.Out ? first(space(v)[ii]) : QN() - first(space(v)[ii])
-        push!(ret, qn => diag(S[Block(jj, ii)]).^2)
-    end    
-    return ret
-end
-
-
 """
     bond_spectrum(psi::MPS, bond::Int; by_charge = false)
 
@@ -146,6 +111,7 @@ function bond_spectrum(psi::MPS, bond::Int; by_charge = false)
     end
 end
 
+#################################################################################
 
 """
     bond_spectrum(psi::MPS; bonds = nothing, by_charge = false)
@@ -162,8 +128,8 @@ Returns a vector of spectra, one for each bonds. The type depends on `by_charge`
 If `by_charge == false`, the function returns the full spectrum as a `Vector{Vector{Float64}}`.
 
 If `by_charge == true`, the spectrum is grouped into different QN sectors, and the result is
-returned as a `Vector{Vector{Pair{QN, Vector{Float64}}}}`, where each pair contains a QN label and its
-associated eigenvalue spectrum.
+returned as a `Vector{Vector{Pair{QN, Vector{Float64}}}}`, where each pair contains a QN label
+and its associated eigenvalue spectrum.
 """
 function bond_spectrum(psi::MPS; bonds::Union{Nothing, Vector{Int}} = nothing, by_charge = false)
     N = length(psi)    
@@ -298,7 +264,7 @@ function measure(::Type{T}, psi::MPS,
     
     if length(opdict) == 1
         fkey = first(keys(opdict)) 
-        return expectC(psi, opdict[fkey])
+        return measure(T, psi, opdict[fkey])
     end
 
     #************************************************************

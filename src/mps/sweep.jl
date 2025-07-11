@@ -156,7 +156,7 @@ function fullsweep!(sysenv::StateEnvs, solver, nsite::Int, swdata::SweepData;
     push!(swdata.maxchi, maxlinkdim(sysenv.psi))
     push!(swdata.energy, energy)
     mideigs = lasteigs[N ÷ 2]
-    push!(swdata.entropy, shannon_entropy(mideigs / sum(mideigs)))
+    push!(swdata.entropy, _entropy(mideigs / sum(mideigs)))
     push!(swdata.maxtruncerr, maxtruncerr)
     swdata.lasteigs = lasteigs
     
@@ -336,7 +336,7 @@ function dynamic_fullsweep!(sysenv::StateEnvs, solver, swdata::SweepData;
     push!(swdata.maxchi, maxlinkdim(sysenv.psi))
     push!(swdata.energy, energy)
     mideigs = lasteigs[N ÷ 2]
-    push!(swdata.entropy, shannon_entropy(mideigs / sum(mideigs)))
+    push!(swdata.entropy, _entropy(mideigs / sum(mideigs)))
     push!(swdata.maxtruncerr, maxtruncerr)
     swdata.lasteigs = lasteigs
     
@@ -472,7 +472,7 @@ function _krylov_addbasis!(psi::MPS, phis::Vector{MPS}, extension_cutoff::Float6
     for j in reverse(2:N)
         # SVD psi[j] to compute B
         linds = (s[j - 1], linkind(psi, j - 1))
-        _, S, B = svd(psi[j], linds; righttags="Link,l=$j")
+        _, S, B = svd(psi[j], linds...; righttags="Link,l=$j")
         rinds = uniqueinds(B, S)
 
         # Make projector
