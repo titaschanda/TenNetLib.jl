@@ -268,13 +268,13 @@ See documentation of KrylovKit.jl.
  - `solver_check_convergence::Bool = false`.
 
 #### Return values:
- - `::Float64`: Energy.
+ - `::Union{Float64, ComplexF64}`: Energy. It is complex if `ishermitian == false`.
  - `::TTN`: The state psi.
 """
 function optimize(psi0::TTN, H::CouplingModel,
                   params::OptimizeParamsTTN,
                   sweeppath::Vector{Int2};
-                  kwargs...)::Tuple{Float64, TTN}
+                  kwargs...)::Tuple{Union{Float64, ComplexF64}, TTN}
 
     sysenv = StateEnvsTTN(psi0, H)
     swdata = optimize!(sysenv, params, sweeppath; kwargs...)
@@ -284,7 +284,7 @@ end
 function optimize(psi0::TTN, H::CouplingModel, Ms::Vector{TTN},
                   params::OptimizeParamsTTN,
                   sweeppath::Vector{Int2};
-                  kwargs...)::Tuple{Float64, TTN}
+                  kwargs...)::Tuple{Union{Float64, ComplexF64}, TTN}
     weight::Float64 = get(kwargs, :weight, -1.0)
     sysenv = StateEnvsTTN(psi0, H, Ms; weight)
     swdata = optimize!(sysenv, params, sweeppath; kwargs...)
@@ -294,7 +294,7 @@ end
 function optimize(psi0::TTN, H::CouplingModel, Ms::Vector{TTN{T}},
                   params::OptimizeParamsTTN,
                   sweeppath::Vector{Int2};
-                  kwargs...)::Tuple{Float64, TTN} where T
+                  kwargs...)::Tuple{Union{Float64, ComplexF64}, TTN} where T
     weight::Float64 = get(kwargs, :weight, -1.0)
     sysenv = StateEnvsTTN(psi0, H, Ms; weight)
     swdata = optimize!(sysenv, params, sweeppath; kwargs...)

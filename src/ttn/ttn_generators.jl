@@ -190,7 +190,7 @@ The structure is determined by the input `graph` object.
 """
 function randomTTN(sites::Vector{Index{T}}, graph::Graph{Int2},
                    sitenodes::Dict{Int, Int2}, chi::Int, qn::QN = QN();
-                   numclean = 50) where T
+                   numclean = 100) where T
     
     numsites = length(sites)
     for b = 1 : numsites
@@ -271,7 +271,7 @@ tree graph. Automatically handles situations where the number of sites is not a 
 **Note**: For QN conserving TTN, the bond dimension might be off by one or two from `chi`.
 """
 function default_randomTTN(sites::Vector{Index{T}}, chi::Int, qn::QN = QN();
-                           numclean = 50) where T
+                           numclean = 100) where T
     
     numsites = length(sites)
     graph, sitenodes = default_graph_sitenodes(numsites)

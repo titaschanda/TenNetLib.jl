@@ -37,7 +37,7 @@ See the documentation of KrylovKit.jl.
  - `solver_check_convergence::Bool = false`.
 
 #### Return values:
- - `::Float64`: Energy.
+ - `::Union{Float64, ComplexF64}`: Energy. It is complex if `ishermitian == false`.
 """
 function update_position!(sysenv::StateEnvsTTN, solver, node::Int2;
                           time_step::Union{Float64, ComplexF64, Nothing},
@@ -46,7 +46,7 @@ function update_position!(sysenv::StateEnvsTTN, solver, node::Int2;
                           mindim::Int,
                           cutoff::Float64,
                           svd_alg::String,
-                          kwargs...)
+                          kwargs...)::Union{Float64, ComplexF64}
     
     position!(sysenv, node;
               normalize=normalize,

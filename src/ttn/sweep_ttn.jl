@@ -5,13 +5,13 @@
     mutable struct SweepDataTTN
         sweepcount::Int
         maxchi::Vector{Int}
-        energy::Vector{Float64}
+        energy::Vector{Union{Float64, ComplexF64}}
     end
 
 Holds historical data after each (full)sweep of the TTN. Requires for convergence check etc.
  - `sweepcount::Int`: Number of fullsweeps performed.
  - `maxchi::Vector{Int}`: Maximum MPS bond/link dimensions after every sweep.
- - `energy::Vector{Float64}`: Energies after every sweep.
+ - `energy::Vector{Union{Float64, ComplexF64}}`: Energies after every sweep.
 
 #### Default constructor:
  - `SweepDataTTN()`: Initialize an empty `SweepData` object.
@@ -19,7 +19,7 @@ Holds historical data after each (full)sweep of the TTN. Requires for convergenc
 mutable struct SweepDataTTN
     sweepcount::Int
     maxchi::Vector{Int}
-    energy::Vector{Float64}
+    energy::Vector{Union{Float64, ComplexF64}}
 end
 
 SweepDataTTN() = SweepDataTTN(0, Int[], Float64[])
@@ -32,8 +32,8 @@ SweepDataTTN() = SweepDataTTN(0, Int[], Float64[])
 Shallow copy of `SweepDataTTN`.
 """
 Base.copy(swdata::SweepDataTTN) = SweepDataTTN(swdata.sweepcount,
-                                               Base.copy(swdata.energy),
-                                               Base.copy(swdata.entropy)
+                                               Base.copy(swdata.maxchi),
+                                               Base.copy(swdata.energy)
                                                )
 #################################################################################
 
@@ -110,12 +110,12 @@ See the documentation of KrylovKit.jl.
  - `solver_check_convergence::Bool = false`.
 
 #### Return values:
- - `::Float64`: Change in Energy ΔE
+ - `::Union{Float64, ComplexF64}`: Change in Energy ΔE. It is complex if `ishermitian == false`.
 
 `swdata::SweepDataTTN` gets updated.
 """
 function fullsweep!(sysenv::StateEnvsTTN, sweeppath::Vector{Int2}, solver,
-                    swdata::SweepDataTTN; kwargs...)
+                    swdata::SweepDataTTN; kwargs...)::Union{Float64, ComplexF64}
     
     @assert issetequal(sysenv.psi.graph.nodes, Set(sweeppath))
 
@@ -147,9 +147,9 @@ function fullsweep!(sysenv::StateEnvsTTN, sweeppath::Vector{Int2}, solver,
                      " for `expand_dim=$expand_dim` !!"))
     end
 
-    energy::Float64 = NaN
+    energy = NaN
     swdata.sweepcount += 1
-    sw_time::Float64 = NaN
+    sw_time = NaN
 
     if (outputlevel > 1)
         @printf("###################################################################################\n")
@@ -160,7 +160,7 @@ function fullsweep!(sysenv::StateEnvsTTN, sweeppath::Vector{Int2}, solver,
     if abs(noise) < 100 * Float64_threshold()
         sw_time = @elapsed begin
             for node in [sweeppath; reverse(sweeppath)]
-            #for node in sweeppath
+                #for node in sweeppath
                 energy =  update_position!(sysenv, solver, node;
                                            kwargs...,
                                            time_step = time_step, 
@@ -171,9 +171,8 @@ function fullsweep!(sysenv::StateEnvsTTN, sweeppath::Vector{Int2}, solver,
                                            svd_alg = svd_alg)
 
                 if (outputlevel > 1)
-                    @printf("At sweep %d updated node (%d,%d) => Energy %s, MaxLinkDim %d\n",
-                            swdata.sweepcount, node[1], node[2], energy,
-                            ITensors.maxdim(sysenv.psi[node]))
+                    println("At sweep $(swdata.sweepcount) updated node ($(node[1]),$(node[2])) => ",
+                            "Energy $(energy), MaxLinkDim $(ITensors.maxdim(sysenv.psi[node]))")
                     flush(stdout)
                 end            
             end
@@ -182,7 +181,7 @@ function fullsweep!(sysenv::StateEnvsTTN, sweeppath::Vector{Int2}, solver,
         sw_time = @elapsed begin
             central_node = find_eccentric_central_node(sysenv.psi.graph)
             for ii in [1 : length(sweeppath); length(sweeppath):-1:1]
-                            
+                
                 node = sweeppath[ii]
 
                 if node == central_node
@@ -195,15 +194,14 @@ function fullsweep!(sysenv::StateEnvsTTN, sweeppath::Vector{Int2}, solver,
                                                cutoff = -1.0,
                                                svd_alg = svd_alg)
                     if (outputlevel > 1)
-                        @printf("At sweep %d updated node (%d,%d) => Energy %s, MaxLinkDim %d\n",
-                                swdata.sweepcount, node[1], node[2], energy,
-                                ITensors.maxdim(sysenv.psi[node]))
+                        println("At sweep $(swdata.sweepcount) updated node ($(node[1]),$(node[2])) => ",
+                                "Energy $(string(energy)), MaxLinkDim $(ITensors.maxdim(sysenv.psi[node]))")
                         flush(stdout)
                     end                           
                 else
                     nextnode = nextnode_in_path(sysenv.psi.graph,
                                                 node, central_node)
-                
+                    
                     position!(sysenv, node;
                               normalize = normalize,
                               maxdim = maxdim,
@@ -214,12 +212,12 @@ function fullsweep!(sysenv::StateEnvsTTN, sweeppath::Vector{Int2}, solver,
 
                     subspace_expand!(sysenv.psi, node, nextnode, max_expand_dim, noise)
                     sysenv.psi.orthocenter = nextnode
-            
+                    
                     link = LinkTypeTTN(node, nextnode)
                     linkmaxdim = !isnothing(linkwise_maxdim) &&
                         haskey(linkwise_maxdim, link) ? linkwise_maxdim[link] : maxdim
-                
-                
+                    
+                    
                     for dummy = 1 : expand_numiter
                         newmaxdim = dummy == expand_numiter ?
                             linkmaxdim : (dummy == 1 ?
@@ -234,11 +232,10 @@ function fullsweep!(sysenv::StateEnvsTTN, sweeppath::Vector{Int2}, solver,
                                                    mindim = mindim,
                                                    cutoff = cutoff,
                                                    svd_alg = svd_alg)
-                    
+                        
                         if (outputlevel > 1)
-                            @printf("At sweep %d updated node (%d,%d) => Energy %s, MaxLinkDim %d\n",
-                                    swdata.sweepcount, newnode[1], newnode[2], energy,
-                                    ITensors.maxdim(sysenv.psi[newnode]))
+                            println("At sweep $(swdata.sweepcount) updated node ($(newnode[1]), $(newnode[2])) => ",
+                                    "Energy $(string(energy)), MaxLinkDim $(ITensors.maxdim(sysenv.psi[newnode]))")
                             flush(stdout)
                         end
                     end
@@ -256,17 +253,20 @@ function fullsweep!(sysenv::StateEnvsTTN, sweeppath::Vector{Int2}, solver,
     end
     
     if (outputlevel > 0)
-        @printf("-----------------------------------------------------------------------------------\n")
-        @printf("At sweep %d => E=%s, MaxLinkDim=%d, Noise=%0.2E\n",
-                swdata.sweepcount, swdata.energy[end], swdata.maxchi[end], noise)
-        @printf("At sweep %d => ΔE=%.2E, Time=%0.3f\n",
-                swdata.sweepcount, enerr, sw_time)
-        @printf("-----------------------------------------------------------------------------------\n")
+        println("-----------------------------------------------------------------------------------")
+        println("At sweep $(swdata.sweepcount) => ",
+                "E=$(swdata.energy[end]), ",
+                "MaxLinkDim=$(swdata.maxchi[end]), ",
+                "Noise=$(round(noise, sigdigits=2))")
+        println("At sweep $(swdata.sweepcount) => ",
+                "ΔE=$(enerr), ",
+                "Time=$(round(sw_time, digits=3))")
+        println("-----------------------------------------------------------------------------------")
         flush(stdout)
     end
     
     if (outputlevel > 1)
-        @printf("###################################################################################\n")
+        println("###################################################################################")
         flush(stdout)
     end
     
