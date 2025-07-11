@@ -229,14 +229,14 @@ end
 #################################################################################
 
 function dmrg(psi0::MPS, H::T, params::DMRGParams, nsite::Int;
-              kwargs...)::Tuple{Float64, MPS} where T <: Union{MPO, Vector{MPO}, CouplingModel}
+              kwargs...)::Tuple{Union{Float64, ComplexF64}, MPS} where T <: Union{MPO, Vector{MPO}, CouplingModel}
     sysenv = StateEnvs(psi0, H)
     swdata = dmrg!(sysenv, params, nsite; kwargs...)
     return swdata.energy[end], sysenv.psi
 end
 
 function dmrg(psi0::MPS, H::T, Ms::Vector{MPS}, params::DMRGParams, nsite::Int;
-              kwargs...)::Tuple{Float64, MPS} where T <: Union{MPO, Vector{MPO}, CouplingModel}
+              kwargs...)::Tuple{Union{Float64, ComplexF64}, MPS} where T <: Union{MPO, Vector{MPO}, CouplingModel}
     weight::Float64 = get(kwargs, :weight, -1.0)
     sysenv = StateEnvs(psi0, H, Ms; weight)
     swdata = dmrg!(sysenv, params, nsite; kwargs...)

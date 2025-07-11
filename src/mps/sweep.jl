@@ -5,7 +5,7 @@
     mutable struct SweepData
         sweepcount::Int
         maxchi::Vector{Int}
-        energy::Vector{Float64}
+        energy::Vector{Union{Float64, ComplexF64}}
         entropy::Vector{Float64}
         maxtruncerr::Vector{Float64}
         lasteigs::Vector{Vector{Float64}}
@@ -14,7 +14,7 @@
 Holds historical data after each (full)sweep. Requires for convergence check etc.
  - `sweepcount::Int`: Number of fullsweeps performed.
  - `maxchi::Vector{Int}`: Maximum MPS bond/link dimensions after every sweep.
- - `energy::Vector{Float64}`: Energies after every sweep.
+ - `energy::Vector{Union{Float64, ComplexF64}}`: Energies after every sweep.
  - `entropy::Vector{Float64}`: Mid-chain entropies after every sweep.
  - `maxtrucerr::Vector{Float64}`: Maximum truncation error after every sweep.
  - `lasteigs::Vector{Vector{Float64}}`: Spectrum of eigenvalues at each bond after
@@ -26,7 +26,7 @@ Holds historical data after each (full)sweep. Requires for convergence check etc
 mutable struct SweepData
     sweepcount::Int
     maxchi::Vector{Int}
-    energy::Vector{Float64}
+    energy::Vector{Union{Float64, ComplexF64}}
     entropy::Vector{Float64}
     maxtruncerr::Vector{Float64}
     lasteigs::Vector{Vector{Float64}}
@@ -44,7 +44,7 @@ Base.copy(swdata::SweepData) = SweepData(swdata.sweepcount,
                                          Base.copy(swdata.maxchi),
                                          Base.copy(swdata.energy),
                                          Base.copy(swdata.entropy),
-                                         Base.copy(swdata.mastruncerr),
+                                         Base.copy(swdata.maxtruncerr),
                                          Base.copy(swdata.lasteigs)
                                          )
 
@@ -86,13 +86,13 @@ See the documentation of KrylovKit.jl.
  - `solver_check_convergence::Bool = false` if `eig_solver`, `true` if `exp_solver`.
 
 #### Return values:
- - `::Float64`: Change in Energy ΔE
+ - `::Union{Float64, ComplexF64}`: Change in Energy ΔE. It is complex if `ishermitian == false`.
  - `::Float64`: Change in Entropy ΔS
 
 `swdata::SweepData` gets updated.
 """
 function fullsweep!(sysenv::StateEnvs, solver, nsite::Int, swdata::SweepData;
-                    kwargs...)::Tuple{Float64, Float64}
+                    kwargs...)::Tuple{Union{Float64, ComplexF64}, Float64}
     
     outputlevel::Int = get(kwargs, :outputlevel, 1)
     noise = get(kwargs, :noise, 0.0)
@@ -103,7 +103,7 @@ function fullsweep!(sysenv::StateEnvs, solver, nsite::Int, swdata::SweepData;
     
     @assert isortho(sysenv.psi) && orthocenter(sysenv.psi) == 1
     
-    energy::Float64 = NaN
+    energy = NaN
     maxtruncerr = 0.0
     swdata.sweepcount += 1   
     N = length(sysenv)
@@ -116,15 +116,15 @@ function fullsweep!(sysenv::StateEnvs, solver, nsite::Int, swdata::SweepData;
     
     sw_time = @elapsed begin
         for bond = 1 : N-1
-            energy, err, eigs = update_position!(sysenv, solver, bond, nsite, "left"; kwargs...)
+            energy, err, _ = update_position!(sysenv, solver, bond, nsite, "left"; kwargs...)
             # DO NOT NEED HERE... 
             # add left eigs
             # lasteigs[bond] = eigs
             #
             maxtruncerr = max(err, maxtruncerr)    
             if (outputlevel > 1)
-                @printf("At left sweep %d bond %d => Energy %s, Err %.2E \n",
-                        swdata.sweepcount, bond, energy, err)
+                println("At left sweep $(swdata.sweepcount) bond $bond => Energy $energy, ",
+                        "Err $(round(err, sigdigits=2))")
                 flush(stdout)
             end
             if nsite == 1 && bond == N-1
@@ -142,8 +142,8 @@ function fullsweep!(sysenv::StateEnvs, solver, nsite::Int, swdata::SweepData;
             #
             maxtruncerr = max(err, maxtruncerr)
             if (outputlevel > 1)
-                @printf("At right sweep %d bond %d => Energy %s, Err %.2E \n",
-                        swdata.sweepcount, bond, energy, err)
+                println("At right sweep $(swdata.sweepcount) bond $bond => Energy $energy, ",
+                        "Err $(round(err, sigdigits=2))")
                 flush(stdout)
             end
             if nsite == 1 && bond == 1
@@ -167,21 +167,28 @@ function fullsweep!(sysenv::StateEnvs, solver, nsite::Int, swdata::SweepData;
         enerr = NaN
         enterr = NaN
     end
-    
+
     if (outputlevel > 0)
-        @printf("-----------------------------------------------------------------------------------\n")
-        @printf("At sweep %d => E=%s, S=%s, MaxLinkDim=%d, Noise=%0.2E\n",
-                swdata.sweepcount, swdata.energy[end], swdata.entropy[end], swdata.maxchi[end],
-                noise)
-        @printf("At sweep %d => ΔE=%.2E, ΔS=%.2E, MaxErr=%.2E, Time=%0.3f\n",
-                swdata.sweepcount, enerr, enterr, maxtruncerr, sw_time)
-        @printf("-----------------------------------------------------------------------------------\n")
+        println("-----------------------------------------------------------------------------------")
+        println("At sweep $(swdata.sweepcount) => ",
+                "E=$(swdata.energy[end]), ",
+                "S=$(swdata.entropy[end]), ",
+                "MaxLinkDim=$(swdata.maxchi[end]), ",
+                "Noise=$(round(noise, sigdigits=2))")
+        
+        println("At sweep $(swdata.sweepcount) => ",
+                "ΔE=$(enerr), ",
+                "ΔS=$(enterr), ",
+                "MaxErr=$(round(maxtruncerr, sigdigits=2)), ",
+                "Time=$(round(sw_time, digits=3))")
+        
+        println("-----------------------------------------------------------------------------------")
         flush(stdout)
     end
     
     
     if (outputlevel > 1)
-        @printf("###################################################################################\n")
+        println("###################################################################################")
         flush(stdout)
     end
 
@@ -242,7 +249,7 @@ See the documentation of KrylovKit.jl.
  - `extension_cutoff::Float64 = 1E-10`: Cutoff for the basis extension step in GSE.
 
 #### Return values:
- - `::Float64`: Change in Energy ΔE
+ - `::Union{Float64, ComplexF64}`: Change in Energy ΔE. It is complex if `ishermitian == false`.
  - `::Float64`: Change in Entropy ΔS
 
 `swdata::SweepData` gets updated.
@@ -250,7 +257,7 @@ See the documentation of KrylovKit.jl.
 function dynamic_fullsweep!(sysenv::StateEnvs, solver, swdata::SweepData;
                             eigthreshold::Float64 = 1E-12,
                             extendat::Union{Nothing, Int} = nothing,
-                            kwargs...)::Tuple{Float64, Float64}
+                            kwargs...)::Tuple{Union{Float64, ComplexF64}, Float64}
 
     maxdim::Int = get(kwargs, :maxdim, typemax(Int))    
     outputlevel::Int = get(kwargs, :outputlevel, 1)
@@ -280,7 +287,7 @@ function dynamic_fullsweep!(sysenv::StateEnvs, solver, swdata::SweepData;
     
     @assert isortho(sysenv.psi) && orthocenter(sysenv.psi) == 1
     
-    energy = 0.0
+    energy = NaN
     maxtruncerr = 0.0
     swdata.sweepcount += 1   
     N = length(sysenv)
@@ -302,8 +309,8 @@ function dynamic_fullsweep!(sysenv::StateEnvs, solver, swdata::SweepData;
             #
             maxtruncerr = max(err, maxtruncerr)    
             if (outputlevel > 1)
-                @printf("At left sweep %d bond %d => Energy %s, Err %.2E \n",
-                        swdata.sweepcount, bond, energy, err)
+                println("At left sweep $(swdata.sweepcount) bond $bond => Energy $energy, ",
+                        "Err $(round(err, sigdigits=2))")
                 flush(stdout)
             end
             if nsite == 1 && bond == N-1
@@ -322,8 +329,8 @@ function dynamic_fullsweep!(sysenv::StateEnvs, solver, swdata::SweepData;
             #
             maxtruncerr = max(err, maxtruncerr)
             if (outputlevel > 1)
-                @printf("At right sweep %d bond %d => Energy %s, Err %.2E \n",
-                        swdata.sweepcount, bond, energy, err)
+                println("At right sweep $(swdata.sweepcount) bond $bond => Energy $energy, ",
+                        "Err $(round(err, sigdigits=2))")
                 flush(stdout)
             end
             if nsite == 1 && bond == 1
@@ -349,19 +356,25 @@ function dynamic_fullsweep!(sysenv::StateEnvs, solver, swdata::SweepData;
     end
     
     if (outputlevel > 0)
-        @printf("-----------------------------------------------------------------------------------\n")
-        @printf("At sweep %d => E=%s, S=%s, MaxLinkDim=%d, Noise=%0.2E\n",
-                swdata.sweepcount, swdata.energy[end], swdata.entropy[end], swdata.maxchi[end],
-                noise)
-        @printf("At sweep %d => ΔE=%.2E, ΔS=%.2E, MaxErr=%.2E, Time=%0.3f\n",
-                swdata.sweepcount, enerr, enterr, maxtruncerr, sw_time)
-        @printf("-----------------------------------------------------------------------------------\n")
+        println("-----------------------------------------------------------------------------------")
+        println("At sweep $(swdata.sweepcount) => ",
+                "E=$(swdata.energy[end]), ",
+                "S=$(swdata.entropy[end]), ",
+                "MaxLinkDim=$(swdata.maxchi[end]), ",
+                "Noise=$(round(noise, sigdigits=2))")        
+        println("At sweep $(swdata.sweepcount) => ",
+                "ΔE=$(enerr), ",
+                "ΔS=$(enterr), ",
+                "MaxErr=$(round(maxtruncerr, sigdigits=2)), ",
+                "Time=$(round(sw_time, digits=3))")
+        
+        println("-----------------------------------------------------------------------------------")
         flush(stdout)
     end
     
     
     if (outputlevel > 1)
-        @printf("###################################################################################\n")
+        println("###################################################################################")
         flush(stdout)
     end
 
@@ -443,12 +456,14 @@ function krylov_extend!(sysenv::StateEnvs{ProjMPO}; kwargs...)::Nothing
     
     outputlevel::Int = get(kwargs, :outputlevel, 1)
     if (outputlevel > 0)
-        @printf("-----------------------------------------------------------------------------------\n")
-        @printf("Global Subspace Expansion: KrylovDim=%d, applyH Cutoff=%.2E, applyH MaxDim=%d\n",
-                extension_krylovdim, extension_applyH_cutoff, extension_applyH_maxdim)
-        @printf("Global Subspace Expansion: Cutoff=%.2E, MaxLinkDim=%d, Time=%0.3f\n",
-                extension_cutoff, maxlinkdim(sysenv.psi), kr_time)
-        @printf("-----------------------------------------------------------------------------------\n")
+        println("-----------------------------------------------------------------------------------")
+        println("Global Subspace Expansion: KrylovDim=$extension_krylovdim, ",
+                "applyH Cutoff=$(round(extension_applyH_cutoff, sigdigits=2)), ",
+                "applyH MaxDim=$extension_applyH_maxdim")
+        
+        println("Global Subspace Expansion: Cutoff=$(round(extension_cutoff, sigdigits=2)), ",
+                "MaxLinkDim=$(maxlinkdim(sysenv.psi)), Time=$(round(kr_time, digits=3))")
+        println("-----------------------------------------------------------------------------------")
         flush(stdout)
     end
     

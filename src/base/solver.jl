@@ -17,12 +17,12 @@ See the documentation of KrylovKit.jl.
  - `solver_check_convergence::Bool = false`.
 
 #### Return values:
- - `::Float64`: Smallest eigenvalue.
- - `::ITensor`: Eigenstate corresponding to the smallest eigenvalue.
+ - `::Union{Float64, ComplexF64}`: Eigenvalue.
+ - `::ITensor`: Eigenstate corresponding to the eigenvalue.
 """
 function eig_solver(env, phi0::ITensor,
                     time_step::Nothing; 
-                    kwargs...)::Tuple{Float64, ITensor}
+                    kwargs...)::Tuple{Union{Float64, ComplexF64}, ITensor}
     howmany = 1
     which = get(kwargs, :solver_which_eigenvalue, :SR)
     solver_kwargs = (;
@@ -39,7 +39,6 @@ function eig_solver(env, phi0::ITensor,
     if check_conv && info.converged < 1
         error("`eig_solver()` not converged !!")
     end
-
     return vals[1], vecs[1]
 end
 

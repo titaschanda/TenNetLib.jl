@@ -33,20 +33,29 @@ function _update_two_site!(sysenv::StateEnvs, solver, pos::Int, ortho::String,
                            svd_alg::String,
                            noise::Float64,
                            reverse_step::Bool;                           
-                           kwargs...)::Tuple{Float64, Float64, Vector{Float64}}
+                           kwargs...)::Tuple{Union{Float64, ComplexF64},
+                                             Float64, Vector{Float64}}
     # Sanity check
     @assert pos > 0 && pos < length(sysenv)
     @assert (orthocenter(sysenv.psi) == pos && ortho == "left") || 
         (orthocenter(sysenv.psi) == pos+1 && ortho == "right")
     
+    ishermitian = get(kwargs, :ishermitian, true)
     nsite = 2
     set_nsite!(sysenv, nsite)
     phi = sysenv.psi[pos] * sysenv.psi[pos+1]
     position!(sysenv, pos)        
     energy, phi = solver(sysenv, phi, time_step; kwargs...)
     normalize && normalize!(phi)
-    isnan(energy) && (energy = real(scalar(dag(phi) * sysenv.PH(phi))))
 
+    if isnan(energy)
+        if ishermitian
+            energy = real(scalar(dag(phi) * sysenv.PH(phi)))
+        else
+            energy = ComplexF64(scalar(dag(phi) * sysenv.PH(phi)))
+        end
+    end
+    
     drho = nothing
     if abs(noise) > Float64_threshold()
         drho = noise * noiseterm(sysenv.PH, phi, ortho)
@@ -91,19 +100,28 @@ function _update_one_site!(sysenv::StateEnvs, solver, pos::Int, ortho::String,
                            svd_alg::String,
                            noise::Float64,
                            reverse_step::Bool;
-                           kwargs...)::Tuple{Float64, Float64, Vector{Float64}}
+                           kwargs...)::Tuple{Union{Float64, ComplexF64},
+                                             Float64, Vector{Float64}}
 
     # Sanity check
     @assert pos > 0 && pos <= length(sysenv)
     @assert orthocenter(sysenv.psi) == pos
-    
+
+    ishermitian = get(kwargs, :ishermitian, true)
     nsite = 1
     set_nsite!(sysenv, nsite)
     phi = sysenv.psi[pos]
     position!(sysenv, pos)        
     energy, phi = solver(sysenv, phi, time_step; kwargs...)
     normalize && normalize!(phi)
-    isnan(energy) && (energy = real(scalar(dag(phi) * sysenv.PH(phi))))
+
+    if isnan(energy)
+        if ishermitian
+            energy = real(scalar(dag(phi) * sysenv.PH(phi)))
+        else
+            energy = ComplexF64(scalar(dag(phi) * sysenv.PH(phi)))
+        end
+    end
 
     truncerr = 0.0
     eigs::Vector{Float64} = Float64[]         
@@ -206,13 +224,13 @@ See the documentation of KrylovKit.jl.
  - `solver_check_convergence::Bool = false` if `eig_solver`, `true` if `exp_solver`.
 
 #### Return values:
- - `::Float64`: Energy.
+ - `::Union{Float64, ComplexF64}`: Energy. It is complex is `ishermitian == false`.
  - `::Float64`: Truncation Error.
  - `::Vector{Float64}`: SVD spectrum.
 """
 function update_position!(sysenv::StateEnvs, solver,
                           pos::Int, nsite::Int, ortho::String; 
-                          kwargs...)::Tuple{Float64, Float64, Vector{Float64}}
+                          kwargs...)::Tuple{Union{Float64, ComplexF64}, Float64, Vector{Float64}}
 
     time_step::Union{Float64, ComplexF64, Nothing} = get(kwargs, :time_step, nothing)
     normalize::Bool = get(kwargs, :normalize, true)
@@ -263,31 +281,31 @@ end
 #=
 
 function _expandterm(P::ProjMPO, phi::ITensor, 
-                     ortho::String)::Tuple{ITensor, Union{Index, Nothing},
-                                           Int, Union{Index, Nothing}}
-    
-    itensor_map = Union{ITensor,OneITensor}[]
-    push!(itensor_map, ortho == "left" ? lproj(P) : rproj(P))
-    append!(itensor_map, P.H[site_range(P)])    
-    Mix = phi
-    for it in itensor_map
-        Mix *= it
-    end
-    noprime!(Mix)
-    
-    b = ortho == "left" ? site_range(P)[end] : site_range(P)[begin]
-    
-    if (b == 1 && ortho == "right") || (b == length(P) && ortho == "left")
-        return Mix, nothing, b, nothing
-    end
-    
-    enlinkind = commonind(phi, ortho == "left" ? rproj(P) : lproj(P); tags = "Link")
-    enlinkindH = commonind(P.H[b], ortho == "left" ? rproj(P) : lproj(P); tags = "Link")
-    tag = addtags(tags(enlinkind), "Subspace")
-    comb = combiner(enlinkind, enlinkindH; tags=tag)
-    mixind = combinedind(comb)
-    Mix *= comb
-    return Mix, mixind, b, enlinkind
+ortho::String)::Tuple{ITensor, Union{Index, Nothing},
+Int, Union{Index, Nothing}}
+
+itensor_map = Union{ITensor,OneITensor}[]
+push!(itensor_map, ortho == "left" ? lproj(P) : rproj(P))
+append!(itensor_map, P.H[site_range(P)])    
+Mix = phi
+for it in itensor_map
+Mix *= it
+end
+noprime!(Mix)
+
+b = ortho == "left" ? site_range(P)[end] : site_range(P)[begin]
+
+if (b == 1 && ortho == "right") || (b == length(P) && ortho == "left")
+return Mix, nothing, b, nothing
+end
+
+enlinkind = commonind(phi, ortho == "left" ? rproj(P) : lproj(P); tags = "Link")
+enlinkindH = commonind(P.H[b], ortho == "left" ? rproj(P) : lproj(P); tags = "Link")
+tag = addtags(tags(enlinkind), "Subspace")
+comb = combiner(enlinkind, enlinkindH; tags=tag)
+mixind = combinedind(comb)
+Mix *= comb
+return Mix, mixind, b, enlinkind
 end
 
 #################################################################################
@@ -297,144 +315,144 @@ _expandterm(P::ProjMPO_MPS2, phi::ITensor, ortho::String) = _expandterm(P.PH, ph
 #################################################################################
 
 function _expandterm(P::ProjMPOSum, phi::ITensor, 
-                     ortho::String)::Tuple{ITensor, Union{Index, Nothing},
-                                           Int, Union{Index, Nothing}}
-    
-    Mixers = [_expandterm(x, phi, ortho) for x in P.terms]    
-    
-    if isnothing(Mixers[begin][2])
-        return sum(x -> x[begin], Mixers), nothing, Mixers[begin][3], nothing
-    end
-    
-    tag = tags(Mixers[begin][2])
-    pairmix = [x[1] => x[2] for x in Mixers]
-    S, s = directsum(pairmix...; tags=tag)
-    return S, s, Mixers[begin][3], Mixers[begin][4]
+ortho::String)::Tuple{ITensor, Union{Index, Nothing},
+Int, Union{Index, Nothing}}
+
+Mixers = [_expandterm(x, phi, ortho) for x in P.terms]    
+
+if isnothing(Mixers[begin][2])
+return sum(x -> x[begin], Mixers), nothing, Mixers[begin][3], nothing
+end
+
+tag = tags(Mixers[begin][2])
+pairmix = [x[1] => x[2] for x in Mixers]
+S, s = directsum(pairmix...; tags=tag)
+return S, s, Mixers[begin][3], Mixers[begin][4]
 end
 
 #################################################################################
 
 """
-    subspace_expand!(sysenv::StateEnvs, phi::ITensor, ortho::String, noise::Float64)
+subspace_expand!(sysenv::StateEnvs, phi::ITensor, ortho::String, noise::Float64)
 
 Returns subspace expanded `phi`. Also pads next site with zeros.
 """
 function subspace_expand!(sysenv::StateEnvs, 
-                          phi::ITensor,
-                          ortho::String, 
-                          noise::Float64)::ITensor
-    
-    Mixer, mixind, b,  enlinkind = _expandterm(sysenv.PH, phi, ortho)
-    Mixer *= noise
-    
-    if isnothing(mixind)
-        return phi + Mixer
-    end
-    
-    bnext = ortho == "left" ? b+1 : b-1
-    
-    indzero = [dag(mixind), siteind(sysenv.psi, bnext)]
-    linkindzero = uniqueind(sysenv.psi[bnext], sysenv.psi[b]; tags="Link")
-    !isnothing(linkindzero) && push!(indzero, linkindzero)
-    zerotensor = diagITensor(indzero)
-    
-    phienlarged, sumind = directsum(phi => enlinkind, Mixer => mixind, tags=tags(enlinkind))
-    sysenv.psi[bnext], sumindtemp = directsum(sysenv.psi[bnext] => enlinkind, 
-                                              zerotensor => mixind)
+phi::ITensor,
+ortho::String, 
+noise::Float64)::ITensor
 
-    ## ADD COMBINERS
-    replaceind!(sysenv.psi[bnext], sumindtemp, dag(sumind))
-    ortho == "left" && setrightlim!(sysenv.psi, b)
-    ortho == "right" && setleftlim!(sysenv.psi, b)
-    return phienlarged
+Mixer, mixind, b,  enlinkind = _expandterm(sysenv.PH, phi, ortho)
+Mixer *= noise
+
+if isnothing(mixind)
+return phi + Mixer
+end
+
+bnext = ortho == "left" ? b+1 : b-1
+
+indzero = [dag(mixind), siteind(sysenv.psi, bnext)]
+linkindzero = uniqueind(sysenv.psi[bnext], sysenv.psi[b]; tags="Link")
+!isnothing(linkindzero) && push!(indzero, linkindzero)
+zerotensor = diagITensor(indzero)
+
+phienlarged, sumind = directsum(phi => enlinkind, Mixer => mixind, tags=tags(enlinkind))
+sysenv.psi[bnext], sumindtemp = directsum(sysenv.psi[bnext] => enlinkind, 
+zerotensor => mixind)
+
+## ADD COMBINERS
+replaceind!(sysenv.psi[bnext], sumindtemp, dag(sumind))
+ortho == "left" && setrightlim!(sysenv.psi, b)
+ortho == "right" && setleftlim!(sysenv.psi, b)
+return phienlarged
 end
 
 #################################################################################
 
 function _updateOneSite456!(sysenv::StateEnvs, solver, pos::Int, ortho::String,
-                            time_step::Union{Float64, ComplexF64, Nothing},
-                            normalize::Bool,                
-                            maxdim::Int,
-                            mindim::Int,
-                            cutoff::Float64,
-                            svd_alg::String,
-                            noise::Float64,
-                            reverse_step::Bool;
-                            kwargs...)::Tuple{Float64, Float64, Vector{Float64}}
+time_step::Union{Float64, ComplexF64, Nothing},
+normalize::Bool,                
+maxdim::Int,
+mindim::Int,
+cutoff::Float64,
+svd_alg::String,
+noise::Float64,
+reverse_step::Bool;
+kwargs...)::Tuple{Float64, Float64, Vector{Float64}}
 
-    # Sanity check
-    @assert pos > 0 && pos <= length(sysenv)
-    @assert orthocenter(sysenv.psi) == pos
-    
-    nsite = 1
-    set_nsite!(sysenv, nsite)
-    phi = sysenv.psi[pos]
-    position!(sysenv, pos)        
-    ts = @elapsed begin
-        energy, phi = solver(sysenv.PH, phi, time_step; kwargs...)
-    end
-    global Tsol += ts
-    normalize && normalize!(phi)
-    isnan(energy) && (energy = real(scalar(dag(phi) * sysenv.PH(phi))))
+# Sanity check
+@assert pos > 0 && pos <= length(sysenv)
+@assert orthocenter(sysenv.psi) == pos
 
-    truncerr = 0.0
-    eigs::Vector{Float64} = []         
+nsite = 1
+set_nsite!(sysenv, nsite)
+phi = sysenv.psi[pos]
+position!(sysenv, pos)        
+ts = @elapsed begin
+energy, phi = solver(sysenv.PH, phi, time_step; kwargs...)
+end
+global Tsol += ts
+normalize && normalize!(phi)
+isnan(energy) && (energy = real(scalar(dag(phi) * sysenv.PH(phi))))
 
-    if halfsweep_done(length(sysenv), pos, nsite, ortho)
-        sysenv.psi[pos] = phi
-    else   
-        posnext = ortho == "left" ? pos+1 : pos-1
-        uinds = uniqueinds(phi, sysenv.psi[posnext])
-        origtag = tags(commonind(sysenv.psi[pos], sysenv.psi[posnext]; tags = "Link"))
-        
-  	if noise > 0.0
-            tp = @elapsed begin
-       	        phi = subspace_expand!(sysenv, phi, ortho, noise::Float64)
-            end
-            global Tpad += tp
-        end
+truncerr = 0.0
+eigs::Vector{Float64} = []         
 
-        tsvd = @elapsed begin
-            U, S, V, spec = svd(
-                phi, uinds; 
-                maxdim=maxdim,
-                mindim=mindim,
-                cutoff=cutoff,
-                alg = svd_alg,
-                lefttags = origtag)
-        end
-        global Tsvd += tsvd
-        
-        normalize && normalize!(S)
-        sysenv.psi[pos] = U
-        phi0 = S*V        
-        ortho == "left" && setleftlim!(sysenv.psi, pos)
-        ortho == "right" && setrightlim!(sysenv.psi, pos)            
-        truncerr = spec.truncerr
-        eigs = spec.eigs
-        
-        if reverse_step
-            # Required as next site gets updated by noise
-            noise > 0.0 && position!(sysenv, posnext)
-            #
-            pos1 = ortho == "left" ? pos + 1 : pos
-            set_nsite!(sysenv, nsite - 1)
-            position!(sysenv, pos1)
-            energy, phi0 = solver(sysenv.PH, phi0, -time_step; kwargs...)
-            normalize && normalize!(phi0)
-            isnan(energy) && (energy = real(scalar(dag(phi0) * sysenv.PH(phi0))))
-        end
-        sysenv.psi[posnext] = phi0 * sysenv.psi[posnext]
-    end
+if halfsweep_done(length(sysenv), pos, nsite, ortho)
+sysenv.psi[pos] = phi
+else   
+posnext = ortho == "left" ? pos+1 : pos-1
+uinds = uniqueinds(phi, sysenv.psi[posnext])
+origtag = tags(commonind(sysenv.psi[pos], sysenv.psi[posnext]; tags = "Link"))
 
-    if pos == 1
-        println(Tsol, " ", Tpad, " ", Tsvd)
-        global Tsol = 0
-        global Tpad = 0
-        global Tsvd = 0
-    end
-    
-    return energy, truncerr, eigs
+if noise > 0.0
+tp = @elapsed begin
+phi = subspace_expand!(sysenv, phi, ortho, noise::Float64)
+end
+global Tpad += tp
+end
+
+tsvd = @elapsed begin
+U, S, V, spec = svd(
+phi, uinds; 
+maxdim=maxdim,
+mindim=mindim,
+cutoff=cutoff,
+alg = svd_alg,
+lefttags = origtag)
+end
+global Tsvd += tsvd
+
+normalize && normalize!(S)
+sysenv.psi[pos] = U
+phi0 = S*V        
+ortho == "left" && setleftlim!(sysenv.psi, pos)
+ortho == "right" && setrightlim!(sysenv.psi, pos)            
+truncerr = spec.truncerr
+eigs = spec.eigs
+
+if reverse_step
+# Required as next site gets updated by noise
+noise > 0.0 && position!(sysenv, posnext)
+#
+pos1 = ortho == "left" ? pos + 1 : pos
+set_nsite!(sysenv, nsite - 1)
+position!(sysenv, pos1)
+energy, phi0 = solver(sysenv.PH, phi0, -time_step; kwargs...)
+normalize && normalize!(phi0)
+isnan(energy) && (energy = real(scalar(dag(phi0) * sysenv.PH(phi0))))
+end
+sysenv.psi[posnext] = phi0 * sysenv.psi[posnext]
+end
+
+if pos == 1
+println(Tsol, " ", Tpad, " ", Tsvd)
+global Tsol = 0
+global Tpad = 0
+global Tsvd = 0
+end
+
+return energy, truncerr, eigs
 end
 
 #################################################################################
