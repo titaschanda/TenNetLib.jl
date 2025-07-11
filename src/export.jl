@@ -143,7 +143,6 @@ export
     tdvpsweep!,
 
     # mps/measure.jl
-    shannon_entropy,
     entropy,
     bond_spectrum,
     measure,
