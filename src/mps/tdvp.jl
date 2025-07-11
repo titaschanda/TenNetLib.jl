@@ -33,7 +33,7 @@ end
 Shallow copy of `TDVPEngine`.
 """
 Base.copy(engine::TDVPEngine) = TDVPEngine(Base.copy(engine.sysenv),
-                                           Base.copy(swdata), engine.abstime)
+                                           Base.copy(engine.swdata), engine.abstime)
 
 #################################################################################
 
