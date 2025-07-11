@@ -242,7 +242,7 @@ Only applicable for `nsite = "dynamic"` (see [`dynamic_fullsweep!`](@ref)).
    the MPO to the MPS.
  - `extension_applyH_maxdim::Int = maxlinkdim(psi) + 1`: Maximum bond/link
    dimension of the resulting MPS after the application of the MPO to the MPS.
- - `extension_cutoff::Float64 = 1E-10`: Cutoff for the basis extension step in GSE.
+ - `extension_cutoff::Float64 = 1E-7`: Cutoff for the basis extension step in GSE.
 """
 function tdvpsweep!(engine::TDVPEngine, time_step::Union{Float64, ComplexF64}; 
                     nsite::Union{Int, String} = "dynamic", 
@@ -250,7 +250,7 @@ function tdvpsweep!(engine::TDVPEngine, time_step::Union{Float64, ComplexF64};
                     kwargs...)
     
     if solver != exp_solver
-        error("`solver` must be `exp_solver` for `tdvpsweep` !!")
+        error("`tdvpsweep!()`: `solver` must be `exp_solver` !!")
     end
     
     if nsite == "dynamic"
@@ -259,12 +259,18 @@ function tdvpsweep!(engine::TDVPEngine, time_step::Union{Float64, ComplexF64};
                            reverse_step=true,
                            kwargs...)
     elseif nsite == 2 || nsite == 1
+        extendat = get(kwargs, :extendat, nothing)
+
+        if !isnothing(extendat)
+            error("`tdvpsweep!()`: `extendat` must be `nothing` for `nsite == 2` or `nsite == 1`. \n Manually call `krylov_extend!(engine.sysenv; kwargs...)` for global subspace expansion.")
+        end
+            
         fullsweep!(engine.sysenv, solver, nsite, engine.swdata;
                    time_step = 0.5 * time_step,
                    reverse_step=true,
                    kwargs...)
     else
-        error("""`nsite` must be `"dynamic"`, `2`, or `1` for `tdvpsweep` !!""")
+        error("""`tdvpsweep!()`: `nsite` must be `"dynamic"`, `2`, or `1` !!""")
     end
     engine.abstime += abs(time_step)
     return nothing

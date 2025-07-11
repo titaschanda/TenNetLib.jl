@@ -392,9 +392,9 @@ Performs Global Subspace Expansion.
  - `extension_krylovdim::Int = 3`: Number of Krylov vectors used for GSE.
  - `extension_applyH_cutoff::Float64 = Float64_threshold()`: Cutoff for the application
    the MPO to the MPS.
- - `extension_applyH_maxdim::Int = maxlinkdim(psi) + 1`: Maximum bond/link
+ - `extension_applyH_maxdim::Int = maxlinkdim(psi) + 2`: Maximum bond/link
    dimension of the resulting MPS after the application of the MPO to the MPS.
- - `extension_cutoff::Float64 = 1E-10`: Cutoff for the basis extension step in GSE.
+ - `extension_cutoff::Float64 = 1E-7`: Cutoff for the basis extension step in GSE.
 """
 function krylov_extend!(psi::MPS, H::MPO; kwargs...)
 
@@ -402,9 +402,9 @@ function krylov_extend!(psi::MPS, H::MPO; kwargs...)
     extension_applyH_cutoff::Float64 = get(kwargs, :extension_applyH_cutoff,
                                            Float64_threshold())
     extension_applyH_maxdim::Int = get(kwargs, :extension_applyH_maxdim,
-                                       maxlinkdim(psi) + 1)
+                                       maxlinkdim(psi) + 2)
     extension_cutoff::Float64 = get(kwargs, :extension_cutoff,
-                                    1E-10)
+                                    1E-7)
     
     phis = Vector{MPS}(undef, extension_krylovdim)
         
@@ -430,19 +430,19 @@ Performs Global Subspace Expansion. The `StateEnvs` must be created by a single 
  - `extension_krylovdim::Int = 3`: Number of Krylov vectors used for GSE.
  - `extension_applyH_cutoff::Float64 = Float64_threshold()`: Cutoff for the application
    the MPO to the MPS.
- - `extension_applyH_maxdim::Int = maxlinkdim(psi) + 1`: Maximum bond/link
+ - `extension_applyH_maxdim::Int = maxlinkdim(psi) + 2`: Maximum bond/link
    dimension of the resulting MPS after the application of the MPO to the MPS.
- - `extension_cutoff::Float64 = 1E-10`: Cutoff for the basis extension step in GSE.
+ - `extension_cutoff::Float64 = 1E-7`: Cutoff for the basis extension step in GSE.
 """
 function krylov_extend!(sysenv::StateEnvs{ProjMPO}; kwargs...)::Nothing
-
+    
     extension_krylovdim::Int = get(kwargs, :extension_krylovdim, 3)
     extension_applyH_cutoff::Float64 = get(kwargs, :extension_applyH_cutoff,
                                            Float64_threshold())
     extension_applyH_maxdim::Int = get(kwargs, :extension_applyH_maxdim,
-                                       maxlinkdim(sysenv.psi) + 1)
+                                       maxlinkdim(sysenv.psi) + 2)
     extension_cutoff::Float64 = get(kwargs, :extension_cutoff,
-                                    1E-10)
+                                    1E-7)
     
     kr_time = @elapsed begin
 
