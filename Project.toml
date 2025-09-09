@@ -1,7 +1,7 @@
 name = "TenNetLib"
 uuid = "1ce00845-9e1b-4798-bd63-033d15ad4ca9"
 authors = ["Titas Chanda"]
-version = "0.2.2"
+version = "0.2.2
 
 [deps]
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
